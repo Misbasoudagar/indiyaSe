@@ -1,38 +1,35 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const router = express.Router();
-const Product = require("../models/Product");
+const mongoose = require("mongoose");
 
-// Add a new product
-router.post("/", async (req, res) => {
-  try {
-    const { name, description, price, image } = req.body;
-    const newProduct = new Product({ name, description, price, image });
-    await newProduct.save();
-    res.status(201).json(newProduct);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+// Define Admin Schema
+const AdminSchema = new mongoose.Schema({
+  email: String,
+  password: String,
 });
 
-// Update product by ID
-router.put("/:id", async (req, res) => {
-  try {
-    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+const Admin = mongoose.model("Admin", AdminSchema);
 
-// Delete product by ID
-router.delete("/:id", async (req, res) => {
+// POST /api/admin/login
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    await Product.findByIdAndDelete(req.params.id);
-    res.json({ message: "Product deleted successfully" });
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+
+    return res.json({ success: true, message: "Login successful" });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("❌ Error during admin login:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 

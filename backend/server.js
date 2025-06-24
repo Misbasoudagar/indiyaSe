@@ -11,10 +11,13 @@ const cartRoutes = require('./routes/cartRoutes'); // ✅ Import cart routes las
 
 const app = express();
 dotenv.config();
+const adminRoutes = require("./routes/adminRoutes");
+app.use("/api/admin", adminRoutes);
 
 // ✅ Middleware
 app.use(cors());
 app.use(express.json());
+app.use("/api/products", require("./routes/productRoutes"));
 
 // ✅ API Routes
 app.use("/api/auth", authRoutes);
@@ -27,8 +30,6 @@ app.use("/api/cart", cartRoutes); // ✅ Add cart route after middleware
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/indiyase";
 
-const adminRoutes = require('./routes/adminRoutes');
-app.use('/api/admin', adminRoutes);
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
