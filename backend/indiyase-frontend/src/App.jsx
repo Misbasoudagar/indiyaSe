@@ -4,6 +4,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import ProductList from "./pages/admin/ProductList";
 import AddProduct from "./pages/admin/AddProduct.jsx";
 import EditProduct from "./pages/admin/EditProduct.jsx"; // ✅ FIXED
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 // Public/User Pages
 import HomePage from './pages/HomePage';
