@@ -1,7 +1,15 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const walletController = require('../controllers/walletController');
+const Wallet = require("../models/Wallet");
 
-router.get('/:userId', walletController.getWallet);
+// GET /api/wallet - Admin fetch all wallets
+router.get("/", async (req, res) => {
+  try {
+    const wallets = await Wallet.find();
+    res.json(wallets);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch wallets" });
+  }
+});
 
 module.exports = router;

@@ -5,6 +5,9 @@ import ProductList from "./pages/admin/ProductList";
 import AddProduct from "./pages/admin/AddProduct.jsx";
 import EditProduct from "./pages/admin/EditProduct.jsx"; // ✅ FIXED
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import OrderList from "./pages/admin/OrderList";
+import WalletList from "./pages/admin/WalletList";
+
 
 // Public/User Pages
 import HomePage from './pages/HomePage';
@@ -26,6 +29,9 @@ function App() {
           <Route path="products" element={<ProductList />} />
           <Route path="add-product" element={<AddProduct />} />
           <Route path="edit-product/:id" element={<EditProduct />} /> {/* ✅ This was missing */}
+          <Route path="/admin/orders" element={<OrderList />} />
+          <Route path="wallets" element={<WalletList />} />
+
         </Route>
 
       </Routes>
