@@ -24,19 +24,19 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchCounts();
   }, []);
-
-  return (
-    <div style={{ padding: "20px" }}>
-      <h2>📊 Admin Dashboard</h2>
-      <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
-        <Box title="🧴 Products" value={productCount} />
-        <Box title="🧾 Orders" value={orderCount} />
-        <Box title="👤 Users" value={userCount} />
+  function AdminDashboard() {
+    return (
+      <div style={{ padding: "20px" }}>
+        <h2>📊 Admin Dashboard</h2>
+        <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
+          <Box title="🧴 Products" value={productCount} />
+          <Box title="🧾 Orders" value={orderCount} />
+          <Box title="👤 Users" value={userCount} />
+        </div>
       </div>
-    </div>
-  );
-};
-
+       );
+      };
+    }
 const Box = ({ title, value }) => (
   <div style={boxStyle}>
     <h3>{title}</h3>

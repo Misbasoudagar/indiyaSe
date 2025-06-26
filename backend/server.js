@@ -9,11 +9,19 @@ const orderRoutes = require('./routes/orderRoutes');
 const walletRoutes = require('./routes/walletRoutes');
 const cartRoutes = require('./routes/cartRoutes'); // ✅ Import cart routes last
 
+
 const app = express();
 dotenv.config();
 
-// ✅ Middleware
-app.use(cors());
+// ✅ CORS Middleware
+const corsOptions = {
+  origin: "http://localhost:5173",  // your frontend origin
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // for preflight requests
 app.use(express.json());
 
 // ✅ API Routes
@@ -29,6 +37,7 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/indiyase";
 
 const adminRoutes = require('./routes/adminRoutes');
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/orders', require('./routes/adminOrderRoutes'));
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
