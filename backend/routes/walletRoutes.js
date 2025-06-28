@@ -2,8 +2,18 @@ const express = require("express");
 const router = express.Router();
 const Wallet = require("../models/Wallet");
 
+// ✅ TEMP GET /api/wallet/my (for testing frontend without auth)
+router.get('/my', (req, res) => {
+  res.json({
+    balance: 500,
+    transactions: [
+      { amount: 50, description: 'Order #123 Cashback', date: new Date() },
+      { amount: 100, description: 'Wallet Top-up', date: new Date() },
+    ],
+  });
+});
 
-// GET all wallets
+// ✅ GET all wallets (Admin)
 router.get("/", async (req, res) => {
   try {
     const wallets = await Wallet.find();
@@ -13,36 +23,30 @@ router.get("/", async (req, res) => {
   }
 });
 
-// PUT /api/wallet/:email/update
+// ✅ PUT /api/wallet/:email/update - Update wallet balance (add/deduct)
 router.put("/:email/update", async (req, res) => {
-  try {
-    const { email } = req.params;
-    const { amount } = req.body;
+  const { email } = req.params;
+  const { amount } = req.body;
 
-    let wallet = await Wallet.findOne({ email });
+  try {
+    let wallet = await Wallet.findOne({ email }); // or use `userEmail` depending on model
+
     if (!wallet) {
+      // Create wallet if it doesn't exist
       wallet = new Wallet({ email, balance: amount });
     } else {
       wallet.balance += amount;
     }
 
     await wallet.save();
-    res.json({ message: "Wallet updated", balance: wallet.balance });
+    res.json({ message: "✅ Wallet updated", balance: wallet.balance });
   } catch (err) {
-    res.status(400).json({ message: "Failed to update wallet", error: err.message });
+    console.error("❌ Error updating wallet", err);
+    res.status(500).json({ message: "Failed to update wallet", error: err.message });
   }
 });
 
-// GET /api/wallet - Admin fetch all wallets
-router.get("/", async (req, res) => {
-  try {
-    const wallets = await Wallet.find();
-    res.json(wallets);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch wallets" });
-  }
-});
-// TEMP: Seed a test wallet (use only for development)
+// ✅ POST /api/wallet/seed - Seed a test wallet (development only)
 router.post("/seed", async (req, res) => {
   try {
     await Wallet.deleteMany({});
@@ -53,28 +57,4 @@ router.post("/seed", async (req, res) => {
   }
 });
 
-
-
-// PUT /api/wallet/:email/update
-router.put("/:email/update", async (req, res) => {
-    const { email } = req.params;
-    const { amount } = req.body;
-  
-    try {
-      const wallet = await Wallet.findOne({ userEmail: email });
-  
-      if (!wallet) {
-        return res.status(404).json({ message: "Wallet not found" });
-      }
-  
-      wallet.balance += amount; // Use negative value to deduct
-      await wallet.save();
-  
-      res.json({ message: "✅ Wallet updated", balance: wallet.balance });
-    } catch (err) {
-      console.error("❌ Error updating wallet", err);
-      res.status(500).json({ message: "Failed to update wallet" });
-    }
-  });
-  
-  module.exports = router;
+module.exports = router;

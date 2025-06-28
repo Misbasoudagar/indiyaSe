@@ -1,29 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const AdminOrderList = () => {
+function AdminOrderList() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/admin/orders')
+    axios.get("http://localhost:5000/api/orders/admin")
       .then(res => setOrders(res.data))
-      .catch(err => console.error('Failed to fetch orders:', err));
+      .catch(err => console.error("Failed to load orders", err));
   }, []);
 
-  const handleStatusChange = (orderId, newStatus) => {
-    axios.put(`http://localhost:5000/api/admin/orders/${orderId}/status`, { status: newStatus })
-      .then(() => {
-        setOrders(prev =>
-          prev.map(order =>
-            order._id === orderId ? { ...order, status: newStatus } : order
-          )
-        );
-      })
-      .catch(err => console.error('Failed to update order status:', err));
+  const [filter, setFilter] = useState({email:'',status:'', date:''});
+
+function applyFilters(all) {
+  return all.filter(o => 
+    (!filter.email || o.userEmail.includes(filter.email)) &&
+    (!filter.status || o.status===filter.status)
+    // and date filter...
+  );
+}
+  const handleStatusUpdate = async (id, newStatus) => {
+    try {
+      await axios.put(`http://localhost:5000/api/orders/${id}`, { status: newStatus });
+      setOrders(prev => prev.map(order =>
+        order._id === id ? { ...order, status: newStatus } : order
+      ));
+    } catch (err) {
+      alert("Failed to update status");
+    }
   };
 
   return (
-    <div>
+    <div style={{ padding: "1rem" }}>
       <h2>📦 Manage Orders</h2>
       <table>
         <thead>
@@ -40,16 +48,16 @@ const AdminOrderList = () => {
           {orders.map((o, idx) => (
             <tr key={o._id}>
               <td>{idx + 1}</td>
-              <td>{o.user?.email || 'Unknown'}</td>
-              <td>₹{o.totalAmount}</td>
+              <td>{o.user?.email}</td>
+              <td>₹{o.total}</td>
               <td>{o.status}</td>
-              <td>{new Date(o.createdAt).toLocaleDateString()}</td>
+              <td>{new Date(o.createdAt).toLocaleString()}</td>
               <td>
-                <select value={o.status} onChange={(e) => handleStatusChange(o._id, e.target.value)}>
-                  <option>Pending</option>
-                  <option>Shipped</option>
-                  <option>Delivered</option>
-                </select>
+                {o.status !== "Delivered" && (
+                  <button onClick={() => handleStatusUpdate(o._id, "Delivered")}>
+                    Mark Delivered
+                  </button>
+                )}
               </td>
             </tr>
           ))}
@@ -57,6 +65,6 @@ const AdminOrderList = () => {
       </table>
     </div>
   );
-};
+}
 
 export default AdminOrderList;

@@ -2,38 +2,44 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const UserList = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]); // default to empty array
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/auth/users");
-        setUsers(res.data);
-      } catch (err) {
+    axios
+      .get("http://localhost:5000/api/admin/users")
+      .then((res) => {
+        if (Array.isArray(res.data)) {
+          setUsers(res.data);
+        } else {
+          setError("Unexpected data format");
+          setUsers([]);
+        }
+      })
+      .catch((err) => {
         console.error("Failed to fetch users", err);
-      }
-    };
-
-    fetchUsers();
+        setError("Failed to load users");
+      });
   }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>👥 All Users</h2>
-      <table border="1" cellPadding="10" style={{ width: "100%", marginTop: "20px" }}>
+    <div>
+      <h3>User Management</h3>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <table>
         <thead>
           <tr>
-            <th>#</th>
             <th>Email</th>
-            <th>Registered At</th>
+            <th>Role</th>
+            <th>Active</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user, idx) => (
-            <tr key={user._id}>
-              <td>{idx + 1}</td>
+            <tr key={idx}>
               <td>{user.email}</td>
-              <td>{new Date(user.createdAt).toLocaleString()}</td>
+              <td>{user.role}</td>
+              <td>{user.isActive ? "Yes" : "No"}</td>
             </tr>
           ))}
         </tbody>

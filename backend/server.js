@@ -8,6 +8,8 @@ const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const walletRoutes = require('./routes/walletRoutes');
 const cartRoutes = require('./routes/cartRoutes'); // ✅ Import cart routes last
+const adminUserRoutes = require("./routes/adminUserRoutes");
+
 
 
 const app = express();
@@ -30,6 +32,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/wallet", walletRoutes);
 app.use("/api/cart", cartRoutes); // ✅ Add cart route after middleware
+app.use("/api/admin", adminUserRoutes);
 
 // ✅ MongoDB Connection
 const PORT = process.env.PORT || 5000;

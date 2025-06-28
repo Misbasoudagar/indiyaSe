@@ -1,38 +1,28 @@
-import React from "react";
+import React, { useContext, useEffect } from 'react';
+import { CartContext } from '../context/CartContext';
 
-function CartPage({ cart, removeFromCart, checkout }) {
-  const total = cart.reduce((sum, item) => sum + item.price, 0);
+const CartPage = () => {
+  const { cart } = useContext(CartContext);
+
+  useEffect(() => {
+    console.log("🧾 Cart contains:", cart);
+  }, [cart]);
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold">Your Cart</h2>
+      <h2 className="text-xl font-bold mb-4">🛒 Your Cart</h2>
       {cart.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (
-        <>
-          {cart.map((item, index) => (
-            <div key={index} className="flex justify-between border-b py-2">
-              <span>{item.name}</span>
-              <span>₹{item.price}</span>
-              <button
-                className="text-red-500"
-                onClick={() => removeFromCart(index)}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-          <div className="mt-4 font-bold">Total: ₹{total}</div>
-          <button
-            className="mt-4 px-4 py-2 bg-blue-600 text-white"
-            onClick={checkout}
-          >
-            Checkout
-          </button>
-        </>
+        cart.map((item, i) => (
+          <div key={i} className="border p-2 my-2 rounded">
+            <h4>{item.name}</h4>
+            <p>₹{item.price}</p>
+          </div>
+        ))
       )}
     </div>
   );
-}
+};
 
 export default CartPage;
