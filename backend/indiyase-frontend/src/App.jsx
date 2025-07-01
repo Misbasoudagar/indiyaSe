@@ -24,6 +24,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from './pages/NotFound'; // Optional fallback
 import UserOrdersPage from './pages/UserOrdersPage';
 import WalletPage from './pages/WalletPage'; // 👈 Add this at top
+import MyOrdersPage from './pages/MyOrdersPage';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -41,6 +42,8 @@ const App = () => {
         <Route path="*" element={<NotFound />} />
         <Route path="/orders" element={<UserOrdersPage />} />
 <Route path="/wallet" element={<WalletPage />} /> // 👈 Add this to your Routes
+
+<Route path="/my-orders" element={<MyOrdersPage />} />
 
         {/* ✅ Admin Login - outside layout */}
         <Route path="/admin/login" element={<AdminLogin />} />

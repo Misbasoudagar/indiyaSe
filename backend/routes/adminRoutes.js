@@ -3,33 +3,11 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const Admin = require("../models/adminModel");
 const Order = require("../models/orderModel");
+// const Product = require("../models/productModel"); // Uncomment if using Product
 
-// Get all orders for admin
-router.get("/orders", async (req, res) => {
-  try {
-    const orders = await Order.find().sort({ createdAt: -1 });
-    res.json(orders);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch orders", error: err.message });
-  }
-});
-
-// Update order status
-router.put("/orders/:id/status", async (req, res) => {
-  try {
-    const { status } = req.body;
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    );
-    res.json(order);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to update status", error: err.message });
-  }
-});
-
-// Add a new product
+// ==========================
+// 🔐 Admin Login
+// ==========================
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -46,26 +24,84 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Update product by ID
-router.put("/:id", async (req, res) => {
+// ==========================
+// 🧾 USER: Place New Order
+// ==========================
+router.post("/", async (req, res) => {
   try {
-    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+    const { products, address, userEmail, totalAmount, status } = req.body;
+
+    if (!products || !address || !userEmail || !totalAmount) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const newOrder = new Order({
+      products,
+      address,
+      userEmail,
+      totalAmount,
+      status: status || "Pending",
     });
-    res.json(updated);
+
+    const savedOrder = await newOrder.save();
+    res.status(201).json(savedOrder);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("❌ Failed to create order:", err);
+    res.status(500).json({ message: "Failed to place order", error: err.message });
   }
 });
 
-// Delete product by ID
-router.delete("/:id", async (req, res) => {
+// ==========================
+// 🛠 ADMIN: Get All Orders
+// ==========================
+router.get("/orders", async (req, res) => {
   try {
-    await Product.findByIdAndDelete(req.params.id);
-    res.json({ message: "Product deleted successfully" });
+    const orders = await Order.find().sort({ createdAt: -1 });
+    res.json(orders);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(500).json({ message: "Failed to fetch orders", error: err.message });
   }
 });
+
+// ==========================
+// 🔄 ADMIN: Update Order Status
+// ==========================
+router.put("/orders/:id/status", async (req, res) => {
+  try {
+    const { status } = req.body;
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update status", error: err.message });
+  }
+});
+
+// ==========================
+// (Optional) Product Handlers
+// ==========================
+// Move these to productRoutes.js later
+
+// router.put("/:id", async (req, res) => {
+//   try {
+//     const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+//     res.json(updated);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
+
+// router.delete("/:id", async (req, res) => {
+//   try {
+//     await Product.findByIdAndDelete(req.params.id);
+//     res.json({ message: "Product deleted successfully" });
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
+
 
 module.exports = router;
