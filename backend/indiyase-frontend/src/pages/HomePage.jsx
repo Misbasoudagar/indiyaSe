@@ -141,7 +141,7 @@ const Homepage = () => {
 
         {/* CATEGORIES SECTION */}
         <section className="w-full mb-8 md:mb-10">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6 text-center">Shop by Categories</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-orange-800 mb-4 md:mb-6 text-center">Shop by Categories</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
             {[
               {name: "Medicines", icon: "fa-pills", color: "bg-blue-100 text-blue-600"},
@@ -208,7 +208,6 @@ const Homepage = () => {
           <div>
             <h3 className="font-bold text-lg md:text-xl mb-3 md:mb-4 flex items-center">
               <img src="/images/indiyase-logo.jpeg" alt="Indiyase Logo" className="h-8 w-auto mr-2 rounded" />
-              Indiyase
             </h3>
             <p className="text-gray-300 text-sm md:text-base mb-3 md:mb-4">
               Your trusted partner for medicines, fashion, and daily essentials at the best prices.

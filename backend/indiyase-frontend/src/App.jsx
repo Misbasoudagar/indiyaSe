@@ -11,6 +11,7 @@ import HomePage from './pages/HomePage';
 import Login from './pages/LoginPage.jsx';
 import Register from './pages/RegisterPage.jsx';
 
+
 function App() {
   return (
     <Router>
