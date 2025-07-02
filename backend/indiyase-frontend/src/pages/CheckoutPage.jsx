@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { CartContext } from '../context/CartContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import PhoneOtpVerification from '../components/PhoneOtpVerification';
+
 
 const CheckoutPage = () => {
   const { cart, clearCart } = useContext(CartContext);
@@ -17,13 +19,13 @@ const CheckoutPage = () => {
 
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [useSaved, setUseSaved] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
   const total = cart.reduce(
     (acc, item) => acc + item.price * (item.quantity || 1),
     0
   );
 
-  // Fetch saved addresses when email is entered
   useEffect(() => {
     const fetchSaved = async () => {
       try {
@@ -38,18 +40,21 @@ const CheckoutPage = () => {
   }, [form.email]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: name === 'phone' ? value.replace(/\s/g, '') : value,
+    });
   };
 
   const handlePlaceOrder = async () => {
     const { name, email, phone, address, addressType } = form;
-  
-    // Basic validation
+
     if (!name || !email || !phone || !address) {
       alert('Please fill all required fields.');
       return;
     }
-  
+
     const orderData = {
       products: cart,
       userName: name,
@@ -57,24 +62,21 @@ const CheckoutPage = () => {
       userPhone: phone,
       address: `${address} (${addressType})`,
       totalAmount: total,
-      status: 'Pending'
+      status: 'Pending',
     };
-  
+
     try {
-      // 1️⃣ Place the order
       await axios.post('http://localhost:5000/api/orders', orderData);
-  
-      // 2️⃣ Save the address if it's a new one
+
       if (!useSaved) {
         await axios.put(`http://localhost:5000/api/users/save-address/${email}`, {
           name,
           phone,
           address,
-          addressType
+          addressType,
         });
       }
-  
-      // 3️⃣ Final steps
+
       clearCart();
       alert('✅ Order placed successfully!');
       navigate('/my-orders');
@@ -82,44 +84,51 @@ const CheckoutPage = () => {
       console.error('❌ Order failed:', err);
       alert('Order failed. Please try again.');
     }
-  };  
+  };
 
   const handlePayment = async () => {
-    if (!form.name || !form.email || !form.phone || !form.address) {
-      alert("Please fill all customer fields first.");
+    const { name, email, phone, address } = form;
+
+    if (!name || !email || !phone || !address) {
+      alert('Please fill all customer fields first.');
+      return;
+    }
+
+    if (!isPhoneVerified) {
+      alert('📵 Please verify your phone number before placing order.');
       return;
     }
 
     try {
       const res = await axios.post('http://localhost:5000/api/payment/create-order', {
-        amount: total
+        amount: total,
       });
 
       const options = {
-        key: "rzp_test_xxxxxx", // Replace with real Razorpay Key
+        key: 'rzp_test_xxxxxx', // Replace with your Razorpay key
         amount: res.data.amount,
-        currency: "INR",
-        name: "IndiyaSe",
-        description: "Order Payment",
+        currency: 'INR',
+        name: 'IndiyaSe',
+        description: 'Order Payment',
         order_id: res.data.id,
         handler: function (response) {
-          alert("✅ Payment successful: " + response.razorpay_payment_id);
+          alert('✅ Payment successful: ' + response.razorpay_payment_id);
           handlePlaceOrder();
         },
         prefill: {
           name: form.name,
           email: form.email,
-          contact: form.phone
+          contact: form.phone,
         },
         theme: {
-          color: "#1e40af"
-        }
+          color: '#1e40af',
+        },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
-      console.error("❌ Razorpay failed:", err);
+      console.error('❌ Razorpay failed:', err);
     }
   };
 
@@ -131,9 +140,8 @@ const CheckoutPage = () => {
         <p>Your cart is empty. <a href="/">Go back</a></p>
       ) : (
         <div className="grid md:grid-cols-2 gap-6">
-          {/* LEFT: Address & Form */}
           <div className="space-y-4">
-            {/* Delivery Toggle */}
+            {/* Delivery Option */}
             <div>
               <label className="font-semibold">📍 Delivery Option:</label>
               <div className="flex gap-4 mt-2">
@@ -148,7 +156,6 @@ const CheckoutPage = () => {
               </div>
             </div>
 
-            {/* Saved Address Dropdown */}
             {useSaved && savedAddresses.length > 0 && (
               <select
                 className="w-full p-2 border rounded"
@@ -159,8 +166,9 @@ const CheckoutPage = () => {
                     name: selected.name,
                     phone: selected.phone,
                     address: selected.address,
-                    addressType: selected.addressType
+                    addressType: selected.addressType,
                   });
+                  setIsPhoneVerified(false);
                 }}
               >
                 <option>Select saved address</option>
@@ -172,7 +180,6 @@ const CheckoutPage = () => {
               </select>
             )}
 
-            {/* Customer Form */}
             <input
               type="email"
               name="email"
@@ -189,14 +196,32 @@ const CheckoutPage = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone Number"
-              value={form.phone}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-            />
+            {/* 🔐 OTP Verification Box */}
+            {form.phone.length === 10 && !isPhoneVerified && (
+  <PhoneOtpVerification>
+    phone={form.phone.replace(/\s/g, '')}
+    onVerify={setIsPhoneVerified}
+    </PhoneOtpVerification>
+)}
+
+            {/* Phone Number Input with Verified Badge */}
+<div className="relative">
+  <input
+    type="tel"
+    name="phone"
+    placeholder="Phone Number"
+    value={form.phone}
+    onChange={handleChange}
+    className="w-full p-2 border rounded pr-10"
+  />
+  {isPhoneVerified && (
+    <span className="absolute right-3 top-2 text-green-600 font-semibold text-sm">
+      ✅ Verified
+    </span>
+  )}
+</div>
+
+
             <textarea
               name="address"
               placeholder="Full Address"

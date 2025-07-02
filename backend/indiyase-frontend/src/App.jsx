@@ -25,8 +25,12 @@ import NotFound from './pages/NotFound'; // Optional fallback
 import UserOrdersPage from './pages/UserOrdersPage';
 import WalletPage from './pages/WalletPage'; // 👈 Add this at top
 import MyOrdersPage from './pages/MyOrdersPage';
+
 import Uploadprescription from "./pages/Uploadprescription.jsx";
 
+
+
+import OrdersPage from "./pages/OrdersPage";
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -40,6 +44,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/products" element={<ProductList />} />
+        <Route path="/orders" element={<OrdersPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="*" element={<NotFound />} />

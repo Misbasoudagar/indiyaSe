@@ -36,7 +36,7 @@ const Login = () => {
     if (user) {
       localStorage.setItem('currentUser', JSON.stringify(user));
       localStorage.setItem('email', user.email);
-      navigate('/HomePage');
+      navigate('/');
     } else {
       setError('Invalid credentials. Please try again.');
     }
@@ -97,7 +97,7 @@ const Login = () => {
 
           <p style={styles.footerText}>
             Don't have an account?{' '}
-            <a href="/signup" style={styles.link}>Sign up here</a>
+            <a href="/Register" style={styles.link}>Sign up here</a>
           </p>
         </div>
       </div>

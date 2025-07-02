@@ -2,8 +2,19 @@ import React from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './homepage.css';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 
 const Homepage = () => {
+  const [products, setProducts] = useState([]);
+
+useEffect(() => {
+  axios.get("http://localhost:5000/api/products")
+    .then(res => setProducts(res.data))
+    .catch(err => console.error("Error loading products:", err));
+}, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* 🔵 HEADER - Full width with contained content */}
@@ -111,6 +122,27 @@ const Homepage = () => {
           </div>
         </div>
       </div>
+{/* PRODUCTS ON HOMEPAGE */}
+<section className="my-10 px-4">
+  <h2 className="text-2xl font-bold text-center mb-6">Featured Products</h2>
+  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {products.map((product) => (
+      <div key={product._id} className="bg-white shadow rounded-lg overflow-hidden">
+        <img src={product.image} alt={product.name} className="w-full h-40 object-cover" />
+        <div className="p-4">
+          <h3 className="font-semibold text-sm">{product.name}</h3>
+          <p className="text-orange-600 font-bold">₹{product.price}</p>
+          <Link
+            to={`/product/${product._id}`}
+            className="text-blue-500 text-sm hover:underline"
+          >
+            View Details
+          </Link>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
 
       {/* MAIN CONTENT - Contained width */}
       <main className="flex-grow w-full px-4 py-6 md:py-10">
