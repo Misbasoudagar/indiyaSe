@@ -25,6 +25,8 @@ import NotFound from './pages/NotFound'; // Optional fallback
 import UserOrdersPage from './pages/UserOrdersPage';
 import WalletPage from './pages/WalletPage'; // 👈 Add this at top
 import MyOrdersPage from './pages/MyOrdersPage';
+import Uploadprescription from "./pages/Uploadprescription.jsx";
+
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -45,6 +47,7 @@ const App = () => {
 <Route path="/wallet" element={<WalletPage />} /> // 👈 Add this to your Routes
 
 <Route path="/my-orders" element={<MyOrdersPage />} />
+<Route path="/upload-prescription" element={<Uploadprescription />} />
 
         {/* ✅ Admin Login - outside layout */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -58,6 +61,7 @@ const App = () => {
           <Route path="orders" element={<AdminOrderList />} />
           <Route path="wallets" element={<AdminWallet />} />
           <Route path="users" element={<UserList />} />
+          
         </Route>
       </Routes>
     </Router>
