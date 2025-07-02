@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../context/StoreContext";
+import { CartContext } from "../context/CartContext";
 
 const Navbar = () => {
   const { state, dispatch } = useContext(StoreContext);
+  const { cart } = useContext(CartContext);
   const navigate = useNavigate();
   const user = state.user;
 
@@ -20,8 +22,11 @@ const Navbar = () => {
       </div>
       <div className="flex gap-4 items-center">
         <Link to="/">Home</Link>
-        <Link to="/cart">Cart</Link>
+        <Link to="/cart" className="...">
+          <i className="fas fa-shopping-cart"></i> <span>Cart ({cart.length})</span>
+        </Link>
         <Link to="/orders">My Orders</Link>
+        
         <Link to="/wallet">Wallet</Link>
 
         {user ? (

@@ -35,12 +35,14 @@ const Login = () => {
 
     if (user) {
       localStorage.setItem('currentUser', JSON.stringify(user));
-      navigate('/dashboard');
+      localStorage.setItem('email', user.email);
+      navigate('/HomePage');
     } else {
       setError('Invalid credentials. Please try again.');
     }
+    
+    
   };
-
   return (
     <div style={styles.pageContainer}>
       <div style={styles.backgroundOverlay}></div>

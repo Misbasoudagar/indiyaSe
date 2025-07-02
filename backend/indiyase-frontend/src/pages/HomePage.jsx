@@ -1,6 +1,7 @@
 import React from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './homepage.css';
+import { Link } from 'react-router-dom';
 
 const Homepage = () => {
   return (
@@ -42,13 +43,18 @@ const Homepage = () => {
               <button className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 px-3 py-1 md:px-4 md:py-2 rounded-full shadow hover:shadow-md transition-all hover:scale-105 whitespace-nowrap">
                 <i className="fas fa-store mr-1"></i> Become a Seller
               </button>
-              <a href="#" className="bg-black text-white px-3 py-1 md:py-2 rounded-full text-sm flex items-center gap-1 hover:bg-black-800 transition-colors whitespace-nowrap">
-                <i className="fas fa-user"></i> <span className="hidden sm:inline">Account</span>
-              </a>
-              <a href="#" className="bg-black text-white px-3 py-1 md:py-2 rounded-full text-sm flex items-center gap-1 hover:bg-black-800 transition-colors whitespace-nowrap">
-                <i className="fas fa-shopping-cart"></i> <span className="hidden sm:inline">Cart</span>
-                <span className="absolute -top-1 -right-1 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"></span>
-              </a>
+              <Link to="/cart" className="bg-black text-white px-3 py-1 md:py-2 rounded-full text-sm flex items-center gap-1 hover:bg-gray-800 transition-colors whitespace-nowrap">
+  <i className="fas fa-shopping-cart"></i> <span>Cart</span>
+</Link>
+<Link to="/wallet" className="bg-black text-white px-3 py-1 md:py-2 rounded-full text-sm flex items-center gap-1 hover:bg-black-800 transition-colors whitespace-nowrap">
+  <i className="fas fa-wallet"></i> <span className="hidden sm:inline">Wallet</span>
+</Link>
+<Link to="/orders" className="bg-black text-white px-3 py-1 md:py-2 rounded-full text-sm flex items-center gap-1 hover:bg-black-800 transition-colors whitespace-nowrap">
+  <i className="fas fa-box"></i> <span className="hidden sm:inline">My Orders</span>
+</Link>
+<Link to="/Register" className="bg-black text-white px-3 py-1 md:py-2 rounded-full text-sm flex items-center gap-1 hover:bg-black-800 transition-colors whitespace-nowrap">
+  <i className="fas fa-sign-in-alt"></i> <span className="hidden sm:inline">Account</span>
+</Link>
               <a href="/logout" className="bg-black text-white px-3 py-1 md:py-2 rounded-full text-sm flex items-center gap-1 hover:bg-black-800 transition-colors whitespace-nowrap">
                 <i className="fas fa-sign-out-alt"></i> <span className="hidden sm:inline">Logout</span>
               </a>
