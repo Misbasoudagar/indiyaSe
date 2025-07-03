@@ -13,6 +13,7 @@ import UserList from "./pages/admin/UserList";
 import AdminOrderList from "./pages/admin/AdminOrderList";
 import AdminWallet from "./pages/admin/AdminWallet";
 import AdminProductList from "./pages/admin/ProductList";
+import Adminsellerlist from "./pages/admin/Adminsellerlist";
 
 // Public/User Pages
 import HomePage from './pages/HomePage';
@@ -27,6 +28,10 @@ import WalletPage from './pages/WalletPage'; // 👈 Add this at top
 import MyOrdersPage from './pages/MyOrdersPage';
 
 import Uploadprescription from "./pages/Uploadprescription.jsx";
+// ✅ If your file is in src/pages/
+import Becomeaseller from "./pages/Becomeaseller";
+
+
 
 
 
@@ -53,6 +58,8 @@ const App = () => {
 
 <Route path="/my-orders" element={<MyOrdersPage />} />
 <Route path="/upload-prescription" element={<Uploadprescription />} />
+<Route path="/become-seller" element={<Becomeaseller />} />
+
 
         {/* ✅ Admin Login - outside layout */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -66,6 +73,7 @@ const App = () => {
           <Route path="orders" element={<AdminOrderList />} />
           <Route path="wallets" element={<AdminWallet />} />
           <Route path="users" element={<UserList />} />
+          <Route path="sellers" element={<Adminsellerlist />} />
           
         </Route>
       </Routes>

@@ -40,6 +40,8 @@ const adminRoutes = require('./routes/adminRoutes');
 const adminOrderRoutes = require('./routes/adminOrderRoutes');
 const adminUserRoutes = require('./routes/adminUserRoutes');
 const userRoutes = require('./routes/userRoutes');
+const sellerRoutes = require('./routes/sellerroutes');
+
 
 
 // Mount routes with prefixes
@@ -52,6 +54,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/sellers', sellerRoutes);
+
 // =====================================
 // ✅ DATABASE CONNECTION
 // =====================================

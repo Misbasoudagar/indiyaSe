@@ -53,10 +53,16 @@ useEffect(() => {
                 <i className="fas fa-upload mr-1"></i> Upload Prescription
               </button>
 </Link>
+             
+          
 
-              <button className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 px-3 py-1 md:px-4 md:py-2 rounded-full shadow hover:shadow-md transition-all hover:scale-105 whitespace-nowrap">
-                <i className="fas fa-store mr-1"></i> Become a Seller
-              </button>
+<Link to="/become-seller">
+  <button className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 px-3 py-1 md:px-4 md:py-2 rounded-full shadow hover:shadow-md transition-all hover:scale-105 whitespace-nowrap">
+    <i className="fas fa-store mr-1"></i> Become a Seller
+  </button>
+</Link>
+
+              
               <Link to="/cart" className="bg-black text-white px-3 py-1 md:py-2 rounded-full text-sm flex items-center gap-1 hover:bg-gray-800 transition-colors whitespace-nowrap">
   <i className="fas fa-shopping-cart"></i> <span>Cart</span>
 </Link>
