@@ -1,4 +1,3 @@
-// models/productModel.js
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
@@ -20,6 +19,12 @@ const productSchema = new mongoose.Schema(
     image: {
       type: String,
       default: "", // URL or base64 string
+    },
+    category: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
     },
   },
   {

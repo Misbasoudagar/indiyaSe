@@ -7,13 +7,23 @@ import axios from "axios";
 
 
 const Homepage = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]);  
 
-useEffect(() => {
-  axios.get("http://localhost:5000/api/products")
-    .then(res => setProducts(res.data))
-    .catch(err => console.error("Error loading products:", err));
-}, []);
+  const fetchProducts = async (category = '') => {
+    try {
+      const url = category
+        ? `http://localhost:5000/api/products?category=${category}`
+        : `http://localhost:5000/api/products`;
+      const res = await axios.get(url);
+      setProducts(res.data);
+    } catch (err) {
+      console.error("Error loading products:", err);
+    }
+  };
+  
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -125,6 +135,18 @@ useEffect(() => {
 {/* PRODUCTS ON HOMEPAGE */}
 <section className="my-10 px-4">
   <h2 className="text-2xl font-bold text-center mb-6">Featured Products</h2>
+  <div className="flex justify-center gap-4 mb-4 flex-wrap">
+  {['All', 'medicine', 'wellness', 'beauty', 'electronics'].map((cat, i) => (
+    <button
+      key={i}
+      onClick={() => fetchProducts(cat === 'All' ? '' : cat)}
+      className="bg-orange-100 hover:bg-orange-300 px-3 py-1 rounded-full text-sm"
+    >
+      {cat}
+    </button>
+  ))}
+</div>
+
   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     {products.map((product) => (
       <div key={product._id} className="bg-white shadow rounded-lg overflow-hidden">
@@ -133,11 +155,11 @@ useEffect(() => {
           <h3 className="font-semibold text-sm">{product.name}</h3>
           <p className="text-orange-600 font-bold">₹{product.price}</p>
           <Link
-            to={`/product/${product._id}`}
-            className="text-blue-500 text-sm hover:underline"
-          >
-            View Details
-          </Link>
+                  to={`/product/${product._id}`}
+                  className="text-blue-500 text-sm hover:underline"
+                >
+                  View Details
+                </Link>
         </div>
       </div>
     ))}
@@ -245,6 +267,7 @@ useEffect(() => {
 
       {/* FOOTER - Full width */}
       <footer className="bg-gradient-to-r from-gray-900 to-black text-white py-8 md:py-12 w-full">
+        
         <div className="w-full px-4 mx-auto grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
           <div>
             <h3 className="font-bold text-lg md:text-xl mb-3 md:mb-4 flex items-center">

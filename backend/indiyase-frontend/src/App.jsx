@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -21,55 +21,45 @@ import Register from './pages/RegisterPage';
 import ProductList from "./pages/ProductList";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
-import NotFound from './pages/NotFound'; // Optional fallback
+import NotFound from './pages/NotFound';
 import UserOrdersPage from './pages/UserOrdersPage';
-import WalletPage from './pages/WalletPage'; // 👈 Add this at top
+import WalletPage from './pages/WalletPage';
 import MyOrdersPage from './pages/MyOrdersPage';
-
-import Uploadprescription from "./pages/Uploadprescription.jsx";
-
-
-
+import Uploadprescription from "./pages/Uploadprescription";
 import OrdersPage from "./pages/OrdersPage";
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const App = () => {
- 
   return (
-    <Router>
-      <Routes>
-        {/* ✅ Public/User Routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/products" element={<ProductList />} />
-        <Route path="/orders" element={<OrdersPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="*" element={<NotFound />} />
-        <Route path="/orders" element={<UserOrdersPage />} />
-<Route path="/wallet" element={<WalletPage />} /> // 👈 Add this to your Routes
+    <Routes>
+      {/* ✅ Public/User Routes */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/products" element={<ProductList />} />
+      <Route path="/orders" element={<OrdersPage />} />
+      <Route path="/cart" element={<CartPage />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/wallet" element={<WalletPage />} />
+      <Route path="/my-orders" element={<MyOrdersPage />} />
+      <Route path="/upload-prescription" element={<Uploadprescription />} />
+      <Route path="*" element={<NotFound />} />
 
-<Route path="/my-orders" element={<MyOrdersPage />} />
-<Route path="/upload-prescription" element={<Uploadprescription />} />
+      {/* ✅ Admin Login (outside layout) */}
+      <Route path="/admin/login" element={<AdminLogin />} />
 
-        {/* ✅ Admin Login - outside layout */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-
-        {/* ✅ Admin Panel Routes - inside layout */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="add-product" element={<AddProduct />} />
-          <Route path="products" element={<AdminProductList />} />
-          <Route path="products/edit/:id" element={<EditProduct />} />
-          <Route path="orders" element={<AdminOrderList />} />
-          <Route path="wallets" element={<AdminWallet />} />
-          <Route path="users" element={<UserList />} />
-          
-        </Route>
-      </Routes>
-    </Router>
+      {/* ✅ Admin Panel (inside layout) */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="add-product" element={<AddProduct />} />
+        <Route path="products" element={<AdminProductList />} />
+        <Route path="products/edit/:id" element={<EditProduct />} />
+        <Route path="orders" element={<AdminOrderList />} />
+        <Route path="wallets" element={<AdminWallet />} />
+        <Route path="users" element={<UserList />} />
+      </Route>
+    </Routes>
   );
 };
 

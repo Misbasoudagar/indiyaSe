@@ -1,8 +1,10 @@
 import React, { useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 
 const CartPage = () => {
   const { cart, setCart, clearCart } = useContext(CartContext);
+  const navigate = useNavigate(); // Hook for navigation
 
   // Total price calculation
   const total = cart.reduce((acc, item) => acc + item.price * (item.quantity || 1), 0);
@@ -19,6 +21,11 @@ const CartPage = () => {
     const updatedCart = [...cart];
     updatedCart.splice(index, 1);
     setCart(updatedCart);
+  };
+
+  // Handle checkout
+  const handleCheckout = () => {
+    navigate('/checkout'); // Redirect to checkout page
   };
 
   useEffect(() => {
@@ -66,7 +73,7 @@ const CartPage = () => {
             <p className="text-lg font-semibold">Total: ₹{total}</p>
             <button
               className="mt-2 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-              onClick={() => alert("Proceeding to Checkout...")}
+              onClick={handleCheckout}
             >
               Checkout
             </button>
