@@ -13,6 +13,7 @@ import UserList from "./pages/admin/UserList";
 import AdminOrderList from "./pages/admin/AdminOrderList";
 import AdminWallet from "./pages/admin/AdminWallet";
 import AdminProductList from "./pages/admin/ProductList";
+import Adminsellerlist from "./pages/admin/Adminsellerlist";
 
 // Public/User Pages
 import HomePage from './pages/HomePage';
@@ -25,7 +26,9 @@ import NotFound from './pages/NotFound';
 import UserOrdersPage from './pages/UserOrdersPage';
 import WalletPage from './pages/WalletPage';
 import MyOrdersPage from './pages/MyOrdersPage';
-import Uploadprescription from "./pages/Uploadprescription";
+import Uploadprescription from "./pages/Uploadprescription.jsx";
+// ✅ If your file is in src/pages/
+import Becomeaseller from "./pages/Becomeaseller";
 import OrdersPage from "./pages/OrdersPage";
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -45,7 +48,6 @@ const App = () => {
       <Route path="/my-orders" element={<MyOrdersPage />} />
       <Route path="/upload-prescription" element={<Uploadprescription />} />
       <Route path="*" element={<NotFound />} />
-
       {/* ✅ Admin Login (outside layout) */}
       <Route path="/admin/login" element={<AdminLogin />} />
 
@@ -60,6 +62,29 @@ const App = () => {
         <Route path="users" element={<UserList />} />
       </Route>
     </Routes>
+
+<Route path="/my-orders" element={<MyOrdersPage />} />
+<Route path="/upload-prescription" element={<Uploadprescription />} />
+<Route path="/become-seller" element={<Becomeaseller />} />
+
+
+        {/* ✅ Admin Login - outside layout */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        {/* ✅ Admin Panel Routes - inside layout */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="add-product" element={<AddProduct />} />
+          <Route path="products" element={<AdminProductList />} />
+          <Route path="products/edit/:id" element={<EditProduct />} />
+          <Route path="orders" element={<AdminOrderList />} />
+          <Route path="wallets" element={<AdminWallet />} />
+          <Route path="users" element={<UserList />} />
+          <Route path="sellers" element={<Adminsellerlist />} />
+          
+        </Route>
+      </Routes>
+    </Router>
   );
 };
 
