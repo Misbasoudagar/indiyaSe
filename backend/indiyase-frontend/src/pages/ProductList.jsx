@@ -1,29 +1,32 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { CartContext } from '../context/CartContext';
+import React, { useEffect, useState } from 'react';
+import ProductCard from '../components/ProductCard';
 
-const ProductList = () => {
+const ProductList = ({ category }) => {
   const [products, setProducts] = useState([]);
-  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const res = await fetch('http://localhost:5000/api/products');
-      const data = await res.json();
-      setProducts(data);
+      const url = category
+        ? `http://localhost:5000/api/products?category=${category}`
+        : 'http://localhost:5000/api/products';
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error('Product fetch error:', err);
+      }
     };
     fetchProducts();
-  }, []);
+  }, [category]);
 
   return (
-    <div>
-      <h2>🛍️ Product List</h2>
-      {products.map((product) => (
-        <div key={product._id}>
-          <h3>{product.name}</h3>
-          <p>₹{product.price}</p>
-          <button onClick={() => addToCart(product)}>Add to Cart</button>
-        </div>
-      ))}
+    <div className="p-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        {products.map((p) => (
+          <ProductCard key={p._id} product={p} />
+        ))}
+      </div>
     </div>
   );
 };

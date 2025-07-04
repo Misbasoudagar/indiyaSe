@@ -91,20 +91,36 @@ const Homepage = () => {
             </div>
           </div>
 
-         {/* Navigation - Full width scrollable */}
+         
+
+{/* Navigation - Full width scrollable */}
 <nav className="mt-4 w-full overflow-x-auto whitespace-nowrap scrollbar-hide">
   <div className="flex gap-4 md:gap-6 text-sm font-semibold text-gray-900 py-2 w-max mx-auto">
-    {['Home', 'Women Ethnic', 'Women Western', 'Men Wears', 'Kids', 'Electronics', 'Beauty', 'Grocery', 'Home & Kitchen', 'Jewellery', 'Footwears', 'Books'].map((item, i) => (
-      <a 
-        href="#" 
-        key={i} 
+    {[
+      'Home',
+      'Women Ethnic',
+      'Women Western',
+      'Men Wears',
+      'Kids',
+      'Electronics',
+      'Beauty',
+      'Grocery',
+      'Home & Kitchen',
+      'Jewellery',
+      'Footwears',
+      'Books'
+    ].map((item, i) => (
+      <Link
+        to={item === 'Home' ? '/' : `/category/${encodeURIComponent(item)}`}
+        key={i}
         className="text-gray-900 hover:text-orange-600 transition-colors px-2 py-1 rounded-lg hover:bg-orange-50"
       >
         {item}
-      </a>
+      </Link>
     ))}
   </div>
 </nav>
+
         </div>
       </header>
 

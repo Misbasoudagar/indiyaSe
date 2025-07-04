@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -23,7 +24,7 @@ const ProductList = () => {
       try {
         await axios.delete(`http://localhost:5000/api/products/${id}`);
         alert("✅ Product deleted");
-        fetchProducts(); // Refresh list
+        fetchProducts();
       } catch (err) {
         console.error("❌ Failed to delete product", err);
         alert("❌ Error deleting product");
@@ -53,9 +54,13 @@ const ProductList = () => {
               <td>{p.name}</td>
               <td>{p.description}</td>
               <td>₹{p.price}</td>
-              <td>{p.image ? <img src={p.image} alt="img" width="50" /> : "No image"}</td>
               <td>
-                <Link to={`/admin/edit-product/${p._id}`}>
+  {p.image ? (
+    <img src={`http://localhost:5000${p.image}`} alt="Product" width="60" />
+  ) : "No image"}
+</td>
+<td>
+                <Link to={`/admin/products/edit/${p._id}`}>
                   <button>Edit</button>
                 </Link>
                 <button onClick={() => handleDelete(p._id)}>Delete</button>
