@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 
-const sellerRequestSchema = new mongoose.Schema({
+const sellerSchema = new mongoose.Schema({
   name: String,
   email: String,
   phone: String,
   gstOrUin: String,
   bankAccount: String,
   category: String,
-  idProofUrl: String, // Will hold uploaded document link
+  idProofUrl: String,
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
@@ -18,4 +18,5 @@ const sellerRequestSchema = new mongoose.Schema({
   reviewedAt: Date
 });
 
-module.exports = mongoose.model('SellerRequest', sellerRequestSchema);
+const Seller = mongoose.model('Seller', sellerSchema);
+module.exports = Seller; // ✅ CommonJS export

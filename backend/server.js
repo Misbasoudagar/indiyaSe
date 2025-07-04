@@ -44,9 +44,13 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/admin/orders', adminOrderRoutes);
 app.use('/api/admin/users', adminUserRoutes);
 app.use('/api/users', userRoutes);
+
 app.use('/api/sellers', sellerRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/uploads', express.static('uploads'));
+
+app.use('/api/sellers', sellerRoutes); // ✅ Mount route
+
 
 // Default Routes
 app.get("/", (req, res) => res.send("🚀 Indiyase API Running"));

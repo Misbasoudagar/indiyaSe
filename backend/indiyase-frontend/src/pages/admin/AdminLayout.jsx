@@ -19,6 +19,7 @@ const AdminLayout = () => {
           <li><Link to="/admin/users">Manage Users</Link></li>
       <li><Link to="/admin/wallets">Wallets</Link></li>
       <li><Link to="/admin/orders">Manage Orders</Link></li>
+      <li><Link to="/admin/sellers">Manage Sellers</Link></li>
       
 
 
