@@ -1,5 +1,5 @@
 import express from 'express';
-import Seller from '../models/sellers.js';
+import Seller from '../models/sellers.js'; // ✅ Use consistent import name
 
 const router = express.Router();
 
