@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 const sellerSchema = new mongoose.Schema({
   name: String,
   email: String,
@@ -8,9 +7,7 @@ const sellerSchema = new mongoose.Schema({
   gstOrUin: String,
   bankAccount: String,
   category: String,
-
-
-  idProofUrl: String, // Will hold uploaded document link
+  idProofUrl: String,
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
@@ -21,5 +18,5 @@ const sellerSchema = new mongoose.Schema({
   reviewedAt: Date
 });
 
-const Seller = mongoose.model('Seller', sellerSchema); // ✅ Capitalized model name
-export default Seller; // ✅ Correct export
+const Seller = mongoose.model('Seller', sellerSchema);
+module.exports = Seller; // ✅ CommonJS export

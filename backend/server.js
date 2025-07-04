@@ -1,6 +1,4 @@
-
 const express = require('express');
-
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -56,7 +54,9 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/sellers', sellerRoutes);
+app.use('/api/sellers', sellerRoutes); // ✅ Mount route
+
+
 
 // =====================================
 // ✅ DATABASE CONNECTION

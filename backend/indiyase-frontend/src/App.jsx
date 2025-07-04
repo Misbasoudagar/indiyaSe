@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom"; // ✅ no BrowserRouter here
 
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -32,7 +32,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const App = () => {
   return (
-    <Router>
+    
       <Routes>
         {/* ✅ Public/User Routes */}
         <Route path="/" element={<HomePage />} />
@@ -61,9 +61,10 @@ const App = () => {
           <Route path="wallets" element={<AdminWallet />} />
           <Route path="users" element={<UserList />} />
           <Route path="sellers" element={<Adminsellerlist />} />
+          
         </Route>
       </Routes>
-    </Router>
+    
   );
 };
 
