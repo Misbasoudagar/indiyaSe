@@ -1,5 +1,5 @@
-import express from 'express';
-import Seller from '../models/sellers.js'; // ✅ Use consistent import name
+const express = require('express');
+const Seller = require('../models/sellers');
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ router.post('/submit', async (req, res) => {
   }
 });
 
-// Get all sellers (admin use)
+// Get all sellers
 router.get('/all', async (req, res) => {
   try {
     const sellers = await Seller.find().sort({ createdAt: -1 });
@@ -35,4 +35,4 @@ router.put('/status/:id', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

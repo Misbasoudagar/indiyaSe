@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
+
 
 const sellerSchema = new mongoose.Schema({
   name: String,
@@ -7,7 +8,9 @@ const sellerSchema = new mongoose.Schema({
   gstOrUin: String,
   bankAccount: String,
   category: String,
-  idProofUrl: String,
+
+
+  idProofUrl: String, // Will hold uploaded document link
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
