@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 const mongoose = require('mongoose');
 
 const sellerRequestSchema = new mongoose.Schema({
@@ -8,7 +7,7 @@ const sellerRequestSchema = new mongoose.Schema({
   gstOrUin: String,
   bankAccount: String,
   category: String,
-  idProofUrl: String, // Will hold uploaded document link (Firebase or Cloudinary)
+  idProofUrl: String, // Will hold uploaded document link
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
