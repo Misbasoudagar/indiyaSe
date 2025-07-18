@@ -3,37 +3,49 @@ import React, { useEffect, useState } from "react";
 const AdminSellerList = () => {
   const [sellers, setSellers] = useState([]);
 
+  // Fetch all sellers
   const fetchSellers = async () => {
-    const res = await fetch("http://localhost:5000/api/sellers/all");
-    const data = await res.json();
-    setSellers(data);
+    try {
+      const res = await fetch("http://localhost:5000/api/sellers/all");
+      const data = await res.json();
+      setSellers(data);
+    } catch (error) {
+      console.error("Failed to fetch sellers:", error);
+    }
   };
 
+  // Update seller status
   const updateStatus = async (id, status) => {
-    await fetch(`http://localhost:5000/api/sellers/status/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    fetchSellers();
+    try {
+      await fetch(`http://localhost:5000/api/sellers/status/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      fetchSellers();
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    }
   };
-  // Delete a specific seller by ID
-router.delete('/:id', async (req, res) => {
-  try {
-    await Seller.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Seller deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
+  // Delete seller
+  const deleteSeller = async (id) => {
+    try {
+      await fetch(`http://localhost:5000/api/sellers/${id}`, {
+        method: "DELETE",
+      });
+      fetchSellers();
+    } catch (error) {
+      console.error("Failed to delete seller:", error);
+    }
+  };
 
   useEffect(() => {
     fetchSellers();
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 px-4 py-8">
+    <div className="min-h-screen bg-gray-100 items-center justify-center px-4 py-8">
       <div className="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold text-center mb-6 text-indigo-700">
           🛍️ Seller Requests
@@ -77,18 +89,24 @@ router.delete('/:id', async (req, res) => {
                         >
                           Reject
                         </button>
+                        <button
+                          onClick={() => deleteSeller(seller._id)}
+                          className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
+                        >
+                          Delete
+                        </button>
                       </>
                     )}
                     {seller.status === "approved" && (
-                      <span className="text-green-600 font-semibold">✔ Approved</span>
+                      <span className="text-green-600 font-semibold">
+                        ✔ Approved
+                      </span>
                     )}
                     {seller.status === "rejected" && (
-                      <span className="text-red-600 font-semibold">✖ Rejected</span>
+                      <span className="text-red-600 font-semibold">
+                        ✖ Rejected
+                      </span>
                     )}
-                    {seller.status === "Deleted" && (
-                      <span className="text-red-600 font-semibold">Deleted Seller</span>
-                    )}
-                    
                   </td>
                 </tr>
               ))}

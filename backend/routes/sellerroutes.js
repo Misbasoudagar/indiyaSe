@@ -1,24 +1,37 @@
 const express = require('express');
 const router = express.Router();
 const Seller = require('../models/sellers');
-const sendEmail = require('../utils/sendEmail'); // ✅ Import at top
+const sendEmail = require('../utils/sendEmail'); // ✅ Email utility
 
-// ✅ Approve or Reject seller & send email
+// ✅ [1] GET all sellers
+router.get('/all', async (req, res) => {
+  try {
+    const sellers = await Seller.find();
+    res.json(sellers);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ [2] PUT - Approve/Reject seller & send email
 router.put('/status/:id', async (req, res) => {
   try {
     const { status } = req.body;
 
-    // 1. Update status in MongoDB
     const seller = await Seller.findByIdAndUpdate(
       req.params.id,
       { status },
       { new: true }
     );
 
-    // 2. Prepare email content
-    const subject = status === 'approved'
-      ? '🎉 Seller Request Approved - Indiyase'
-      : '❌ Seller Request Rejected - Indiyase';
+    if (!seller) {
+      return res.status(404).json({ error: 'Seller not found' });
+    }
+
+    const subject =
+      status === 'approved'
+        ? '🎉 Seller Request Approved - Indiyase'
+        : '❌ Seller Request Rejected - Indiyase';
 
     const message = `Hi ${seller.name},\n\nYour Indiyase seller request has been ${status.toUpperCase()}.\n\nRegards,\nTeam Indiyase`;
 
@@ -34,18 +47,16 @@ router.put('/status/:id', async (req, res) => {
       </div>
     `;
 
-    // 3. ✅ Send the email
     await sendEmail(seller.email, subject, message, htmlBody);
 
-    // 4. Respond to admin
     res.json({ message: `Seller ${status} and email sent.` });
-
   } catch (err) {
     console.error('❌ Error updating status or sending email:', err);
     res.status(500).json({ error: err.message });
   }
 });
-// Delete a specific seller by ID
+
+// ✅ [3] DELETE seller
 router.delete('/:id', async (req, res) => {
   try {
     await Seller.findByIdAndDelete(req.params.id);
@@ -54,3 +65,5 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+module.exports = router;

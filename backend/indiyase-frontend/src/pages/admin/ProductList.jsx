@@ -1,17 +1,40 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/products");
-      setProducts(res.data);
+      setLoading(true);
+      setError(null);
+      const response = await axios.get(`${API_BASE}/api/products`);
+      setProducts(response.data);
     } catch (err) {
-      console.error("Failed to fetch products", err);
+      console.error("Fetch products error:", err);
+      setError(err.response?.data?.message || err.message);
+      toast.error("Failed to load products");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        await axios.delete(`${API_BASE}/api/products/${id}`);
+        toast.success("Product deleted successfully");
+        fetchProducts(); // Refresh the list
+      } catch (err) {
+        console.error("Delete product error:", err);
+        toast.error(err.response?.data?.message || "Failed to delete product");
+      }
     }
   };
 
@@ -19,56 +42,78 @@ const ProductList = () => {
     fetchProducts();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/products/${id}`);
-        alert("✅ Product deleted");
-        fetchProducts();
-      } catch (err) {
-        console.error("❌ Failed to delete product", err);
-        alert("❌ Error deleting product");
-      }
-    }
-  };
+  if (loading) {
+    return <div>Loading products...</div>;
+  }
+
+  if (error) {
+    return (
+      <div>
+        <p>Error: {error}</p>
+        <button onClick={fetchProducts}>Retry</button>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>📦 Product List</h2>
-      <Link to="/admin/add-product"><button>Add Product</button></Link>
-      <table border="1" cellPadding="10" style={{ width: "100%", marginTop: "20px" }}>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Image</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((p, idx) => (
-            <tr key={p._id}>
-              <td>{idx + 1}</td>
-              <td>{p.name}</td>
-              <td>{p.description}</td>
-              <td>₹{p.price}</td>
-              <td>
-  {p.image ? (
-    <img src={`http://localhost:5000${p.image}`} alt="Product" width="60" />
-  ) : "No image"}
-</td>
-<td>
-                <Link to={`/admin/products/edit/${p._id}`}>
-                  <button>Edit</button>
-                </Link>
-                <button onClick={() => handleDelete(p._id)}>Delete</button>
-              </td>
+    <div className="admin-product-container">
+      <div className="product-list-header">
+        <h2>Product List</h2>
+        <Link to="/admin/add-product" className="add-product-link">
+          <button className="add-btn">Add Product</button>
+        </Link>
+      </div>
+
+      {products.length === 0 ? (
+        <div className="no-products">
+          <p>No products found</p>
+          <Link to="/admin/add-product">Add your first product</Link>
+        </div>
+      ) : (
+        <table className="product-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Image</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products.map((product, index) => (
+              <tr key={product._id}>
+                <td>{index + 1}</td>
+                <td>{product.name}</td>
+                <td>₹{product.price}</td>
+                <td>
+                  {product.image && (
+                    <img 
+                      src={`${API_BASE}${product.image}`} 
+                      alt={product.name}
+                      className="product-img"
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/100";
+                      }}
+                    />
+                  )}
+                </td>
+                <td className="actions">
+                  <Link to={`/admin/products/edit/${product._id}`}>
+                    <button className="edit-btn">Edit</button>
+                  </Link>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(product._id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

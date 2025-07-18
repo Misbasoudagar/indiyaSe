@@ -15,6 +15,20 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// 🚨 MISSING ENDPOINT - ADD THIS CRUCIAL ROUTE
+// GET all products
+router.get('/', async (req, res) => {
+  try {
+    console.log('Fetching all products...'); // Debug log
+    const products = await Product.find({});
+    console.log(`Found ${products.length} products`); // Debug log
+    res.json(products);
+  } catch (err) {
+    console.error('❌ GET /api/products error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch products' });
+  }
+});
+
 // GET product by ID
 router.get('/:id', async (req, res) => {
   try {
