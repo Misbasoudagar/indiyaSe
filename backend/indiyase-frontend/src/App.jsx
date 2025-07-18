@@ -1,10 +1,6 @@
 import React from "react";
-<<<<<<< HEAD
-import { Routes, Route } from "react-router-dom";
-=======
-import { Routes, Route } from "react-router-dom"; // ✅ no BrowserRouter here
->>>>>>> 818be066b848de602ccfadb22f27c3ebcfd9424b
 
+import { Routes, Route } from "react-router-dom";
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -32,13 +28,16 @@ import Uploadprescription from "./pages/Uploadprescription";
 import Becomeaseller from "./pages/Becomeaseller";
 import CategoryProducts from "./pages/CategoryProducts"; // ✅ Import
 import ProductGrid from "./pages/ProductGrid";
+import CategoryPage from './pages/CategoryPage';
+import ShippingPage from './pages/ShippingPage';
+import CheckoutPaymentPage from "./pages/CheckoutPaymentPage";
+import ThankYouPage from "./pages/ThankYouPage";
 
 // FontAwesome
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const App = () => {
   return (
-<<<<<<< HEAD
     <Routes>
       {/* ✅ Public/User Routes */}
       <Route path="/" element={<HomePage />} />
@@ -55,9 +54,9 @@ const App = () => {
       <Route path="*" element={<NotFound />} />
       <Route path="/category/:categoryName" element={<CategoryProducts />} />
       <Route path="/category/:category" element={<ProductGrid />} />
-=======
-    
-      <Routes>
+      <Route path="/shipping" element={<ShippingPage />} />
+      <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
+      <Route path="/thankyou" element={<ThankYouPage />} />
         {/* ✅ Public/User Routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
@@ -71,25 +70,10 @@ const App = () => {
         <Route path="/upload-prescription" element={<Uploadprescription />} />
         <Route path="/become-seller" element={<Becomeaseller />} />
         <Route path="*" element={<NotFound />} />
->>>>>>> 818be066b848de602ccfadb22f27c3ebcfd9424b
-
+        <Route path="/collections/ethnic-1" element={<CategoryPage />} />
       {/* ✅ Admin Login - outside layout */}
       <Route path="/admin/login" element={<AdminLogin />} />
 
-<<<<<<< HEAD
-      {/* ✅ Admin Panel Routes - inside layout */}
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="add-product" element={<AddProduct />} />
-        <Route path="products" element={<AdminProductList />} />
-        <Route path="/admin/products/edit/:id" element={<EditProduct />} />
-        <Route path="orders" element={<AdminOrderList />} />
-        <Route path="wallets" element={<AdminWallet />} />
-        <Route path="users" element={<UserList />} />
-        <Route path="sellers" element={<Adminsellerlist />} />
-      </Route>
-    </Routes>
-=======
         {/* ✅ Admin Panel Routes - inside layout */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
@@ -104,7 +88,6 @@ const App = () => {
         </Route>
       </Routes>
     
->>>>>>> 818be066b848de602ccfadb22f27c3ebcfd9424b
   );
 };
 

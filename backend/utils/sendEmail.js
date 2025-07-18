@@ -1,28 +1,28 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async (to, subject, text, html) => {
+const sendEmail = async ({ to, subject, html }) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "sandbox.smtp.mailtrap.io", // Or Ethereal
-      port: 587,
+      host: process.env.EMAIL_HOST,
+      port: parseInt(process.env.EMAIL_PORT) || 587, // 🔁 Ensure number
+      secure: false,
       auth: {
-        user: "YOUR_MAILTRAP_USER",
-        pass: "YOUR_MAILTRAP_PASS",
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     const mailOptions = {
-      from: '"Indiyase Team" <no-reply@indiyase.com>',
-      to,         // 👈 Accepts ANY valid email
+      from: `"${process.env.FROM_NAME}" <${process.env.FROM_EMAIL}>`,
+      to,
       subject,
-      text,
       html,
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("✅ Email sent to:", to);
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Email sent to ${to}`);
   } catch (error) {
-    console.error("❌ Email send error:", error);
+    console.error(`❌ Email send error:`, error.message);
   }
 };
 

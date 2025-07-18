@@ -9,7 +9,7 @@ const EditProduct = () => {
     name: '',
     price: '',
     description: '',
-    image: ''
+    image: '',
   });
   const [imageFile, setImageFile] = useState(null);
 
@@ -29,6 +29,7 @@ const EditProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const formData = new FormData();
     formData.append('name', product.name);
     formData.append('price', product.price);
@@ -39,46 +40,73 @@ const EditProduct = () => {
 
     try {
       await axios.put(`http://localhost:5000/api/products/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-      alert('✅ Product updated');
+      alert('✅ Product updated successfully');
       navigate('/admin/products');
     } catch (err) {
       console.error('❌ Failed to update product:', err);
-      alert('Error updating product');
+      alert('❌ Error updating product');
     }
   };
 
   return (
-    <div>
+    <div style={{ padding: '20px' }}>
       <h2>Edit Product</h2>
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <input
-          type="text"
-          name="name"
-          value={product.name}
-          onChange={handleChange}
-          placeholder="Name"
-        /><br />
-        <input
-          type="number"
-          name="price"
-          value={product.price}
-          onChange={handleChange}
-          placeholder="Price"
-        /><br />
-        <textarea
-          name="description"
-          value={product.description}
-          onChange={handleChange}
-          placeholder="Description"
-        /><br />
-        <input
-          type="file"
-          name="image"
-          onChange={handleImageChange}
-        /><br />
-        <button type="submit">Update</button>
+        <div>
+          <input
+            type="text"
+            name="name"
+            value={product.name}
+            onChange={handleChange}
+            placeholder="Product Name"
+            required
+          /><br />
+        </div>
+
+        <div>
+          <input
+            type="number"
+            name="price"
+            value={product.price}
+            onChange={handleChange}
+            placeholder="Price"
+            required
+          /><br />
+        </div>
+
+        <div>
+          <textarea
+            name="description"
+            value={product.description}
+            onChange={handleChange}
+            placeholder="Description"
+            required
+          /><br />
+        </div>
+
+        <div>
+          {product.image && (
+            <img
+              src={`http://localhost:5000${product.image}`}
+              alt="Current"
+              width="80"
+              style={{ marginBottom: '10px' }}
+            />
+          )}
+          <br />
+          <input
+            type="file"
+            name="image"
+            onChange={handleImageChange}
+            accept="image/*"
+          /><br />
+        </div>
+
+        <button type="submit" style={{ marginTop: '10px' }}>
+          Update
+        </button>
       </form>
     </div>
   );

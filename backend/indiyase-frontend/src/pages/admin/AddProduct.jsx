@@ -1,66 +1,68 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const AddProduct = () => {
   const [product, setProduct] = useState({
-    name: "",
-    description: "",
-    price: "",
-    image: ""
+    name: '',
+    description: '',
+    price: '',
+    category: 'Women Ethnic'
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e) => {
-    setProduct({ ...product, [e.target.name]: e.target.value });
-  };
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     try {
-      const res = await axios.post("http://localhost:5000/api/products", product);
-      alert("✅ Product added successfully!");
-      setProduct({ name: "", description: "", price: "", image: "" });
+      const formData = new FormData();
+      formData.append('name', product.name);
+      formData.append('description', product.description);
+      formData.append('price', product.price);
+      formData.append('category', product.category);
+      if (imageFile) formData.append('image', imageFile);
+
+      await axios.post(`${API_BASE_URL}/api/products`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        timeout: 10000 // 10 second timeout
+      });
+
+      toast.success('Product added successfully!');
+      // Reset form
+      setProduct({
+        name: '',
+        description: '',
+        price: '',
+        category: 'Women Ethnic'
+      });
+      setImageFile(null);
     } catch (err) {
-      alert("❌ Failed to add product: " + (err.response?.data?.message || err.message));
-      console.error("Product Add Error:", err);
+      console.error('Add Product Error:', err);
+      const errorMessage = err.response?.data?.message || 
+                         (err.code === 'ECONNABORTED' ? 'Request timed out' : 
+                         err.message.includes('Network Error') ? 'Cannot connect to server' : 
+                         'Failed to add product');
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Add New Product</h2>
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: "400px" }}
-      >
-        <input
-          name="name"
-          placeholder="Name"
-          value={product.name}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={product.description}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="price"
-          type="number"
-          placeholder="Price"
-          value={product.price}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="image"
-          placeholder="Image URL"
-          value={product.image}
-          onChange={handleChange}
-        />
-        <button type="submit">Add Product</button>
+    <div className="product-form">
+      {/* Your existing form JSX */}
+      <form onSubmit={handleSubmit}>
+        {/* Form fields */}
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Adding...' : 'Add Product'}
+        </button>
       </form>
     </div>
   );
