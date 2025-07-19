@@ -1,96 +1,61 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
-const connectDB = require('./config/db');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const connectDB = require("./config/db");
+const path = require("path");
 
-// Initialize Express app
+
+dotenv.config();
+connectDB(); // ✅ Only one connection
+
 const app = express();
 
-// Database Connection
-connectDB(); // Uses connection from config/db.js
-
-// CORS Configuration - Updated for better security
+// CORS setup
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ["Content-Type", "Authorization"]
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Pre-flight requests
-
-// Middleware
+app.options("*", cors(corsOptions));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Static Files - Updated for better path handling
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Routes
+const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const walletRoutes = require('./routes/walletRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const adminOrderRoutes = require('./routes/adminOrderRoutes');
+const adminUserRoutes = require('./routes/adminUserRoutes');
+const userRoutes = require('./routes/userRoutes');
+const sellerRoutes = require('./routes/sellerroutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
-// API Routes - Organized and documented
-const apiRoutes = [
-  { path: '/api/auth', route: require('./routes/authRoutes') },
-  { path: '/api/products', route: require('./routes/productRoutes') },
-  { path: '/api/orders', route: require('./routes/orderRoutes') },
-  { path: '/api/wallet', route: require('./routes/walletRoutes') },
-  { path: '/api/cart', route: require('./routes/cartRoutes') },
-  { path: '/api/admin', route: require('./routes/adminRoutes') },
-  { path: '/api/admin/orders', route: require('./routes/adminOrderRoutes') },
-  { path: '/api/admin/users', route: require('./routes/adminUserRoutes') },
-  { path: '/api/users', route: require('./routes/userRoutes') },
-  { path: '/api/seller', route: require('./routes/sellerRoutes') },
-  { path: '/api/payment', route: require('./routes/paymentRoutes') }
-];
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/wallet', walletRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/admin/orders', adminOrderRoutes);
+app.use('/api/admin/users', adminUserRoutes);
+app.use('/api/users', userRoutes);
 
-// Register all routes
-apiRoutes.forEach(({ path, route }) => {
-  app.use(path, route);
-  console.log(`Registered route: ${path}`);
-});
+app.use('/api/sellers', sellerRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/uploads', express.static('uploads'));
 
-// Health Check Endpoints
-app.get('/', (req, res) => res.status(200).json({ 
-  status: 'success',
-  message: '🚀 Indiyase API Running',
-  timestamp: new Date()
-}));
+app.use('/api/sellers', sellerRoutes); // ✅ Mount route
 
-app.get('/api/health', (req, res) => res.status(200).json({
-  status: 'success',
-  database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-  timestamp: new Date()
-}));
 
-// Error Handling Middleware - Added proper error handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    status: 'error',
-    message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
+// Default Routes
+app.get("/", (req, res) => res.send("🚀 Indiyase API Running"));
+app.get("/api", (req, res) => res.send("✅ Indiyase API is live"));
 
-// 404 Handler - Added to catch undefined routes
-app.use('*', (req, res) => {
-  res.status(404).json({
-    status: 'error',
-    message: 'Endpoint not found',
-    requestedUrl: req.originalUrl
-  });
-});
-
-// Server Configuration
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`✅ Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-});
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  console.error(`Unhandled Rejection: ${err.message}`);
-  server.close(() => process.exit(1));
-});
-
-module.exports = app;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

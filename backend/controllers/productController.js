@@ -1,29 +1,199 @@
 const Product = require('../models/Product');
 
+// Helper function to add full image URL
+const addImageUrl = (product, req) => ({
+  ...product._doc,
+  image: product.image ? `${req.protocol}://${req.get('host')}${product.image}` : null
+});
+
 exports.getAllProducts = async (req, res) => {
-    try {
-        const category = req.query.category;
-        let products;
-
-        if (category) {
-            products = await Product.find({ category });
-        } else {
-            products = await Product.find();
-        }
-
-        res.json(products);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+  try {
+    const { category, minPrice, maxPrice, sort } = req.query;
+    const query = {};
+    
+    // Build query dynamically
+    if (category) query.category = category;
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
     }
+
+    // Sorting
+    const sortOptions = {};
+    if (sort === 'price_asc') sortOptions.price = 1;
+    if (sort === 'price_desc') sortOptions.price = -1;
+    if (sort === 'newest') sortOptions.createdAt = -1;
+
+    const products = await Product.find(query)
+      .sort(sortOptions)
+      .lean(); // Using lean() for better performance
+
+    // Add full URLs to images
+    const productsWithUrls = products.map(product => 
+      addImageUrl(product, req)
+    );
+
+    res.json({
+      success: true,
+      count: products.length,
+      data: productsWithUrls
+    });
+  } catch (err) {
+    console.error('Error fetching products:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Server Error',
+      message: err.message
+    });
+  }
 };
 
+exports.getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: addImageUrl(product, req)
+    });
+  } catch (err) {
+    console.error('Error fetching product:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Server Error',
+      message: err.message
+    });
+  }
+};
 
 exports.createProduct = async (req, res) => {
-    try {
-        const product = new Product(req.body);
-        await product.save();
-        res.status(201).json(product);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+  try {
+    const { name, description, price, category } = req.body;
+    
+    // Enhanced validation
+    if (!name || !price || !category) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields',
+        required: ['name', 'price', 'category']
+      });
     }
+
+    if (isNaN(price) || price <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Price must be a positive number'
+      });
+    }
+
+    const productData = {
+      name,
+      description,
+      price: Number(price),
+      category,
+      image: req.file ? `/uploads/${req.file.filename}` : null
+    };
+
+    const product = await Product.create(productData);
+
+    res.status(201).json({
+      success: true,
+      data: addImageUrl(product, req)
+    });
+  } catch (err) {
+    console.error('Error creating product:', err);
+    
+    if (err.name === 'ValidationError') {
+      const errors = Object.values(err.errors).map(el => el.message);
+      return res.status(400).json({
+        success: false,
+        error: 'Validation Error',
+        messages: errors
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      error: 'Server Error',
+      message: err.message
+    });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const updates = {
+      ...req.body,
+      ...(req.file && { image: `/uploads/${req.file.filename}` })
+    };
+
+    if (updates.price) updates.price = Number(updates.price);
+
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      updates,
+      { new: true, runValidators: true }
+    );
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: addImageUrl(product, req)
+    });
+  } catch (err) {
+    console.error('Error updating product:', err);
+    
+    if (err.name === 'ValidationError') {
+      const errors = Object.values(err.errors).map(el => el.message);
+      return res.status(400).json({
+        success: false,
+        error: 'Validation Error',
+        messages: errors
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      error: 'Server Error',
+      message: err.message
+    });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {}
+    });
+  } catch (err) {
+    console.error('Error deleting product:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Server Error',
+      message: err.message
+    });
+  }
 };

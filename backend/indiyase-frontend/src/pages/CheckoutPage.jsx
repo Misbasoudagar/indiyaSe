@@ -1,127 +1,140 @@
 import React, { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
-import axios from "axios";
-import PhoneOtpVerification from "../components/PhoneOtpVerification";
 
 const CheckoutPage = () => {
-  const { cart, clearCart } = useContext(CartContext);
+  const { cart } = useContext(CartContext);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     address: "",
-    addressType: "Home",
+    apartment: "",
+    city: "",
+    state: "",
+    pincode: ""
   });
-  const [isVerified, setIsVerified] = useState(false);
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    localStorage.setItem("checkout_info", JSON.stringify(form));
+    window.location.href = "/shipping";
+  };
+
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const loadRazorpay = async () => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-  };
-
-  const handlePlaceOrder = async () => {
-    if (!isVerified) return alert("📲 Please verify your phone first");
-
-    setIsPlacingOrder(true);
-    await loadRazorpay();
-
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount: total * 100,
-      currency: "INR",
-      name: "IndiyaSe",
-      description: "Order Payment",
-      handler: async function (response) {
-        try {
-          const payload = {
-            ...form,
-            userEmail: form.email,
-            userName: form.name,
-            userPhone: form.phone,
-            address: form.address,
-            products: cart,
-            totalAmount: total,
-            paymentId: response.razorpay_payment_id,
-          };
-
-          await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/orders`, payload);
-          alert("✅ Order placed successfully!");
-          clearCart();
-        } catch (err) {
-          console.error(err);
-          alert("❌ Failed to place order.");
-        } finally {
-          setIsPlacingOrder(false);
-        }
-      },
-      prefill: {
-        name: form.name,
-        email: form.email,
-        contact: form.phone,
-      },
-      theme: {
-        color: "#0f172a",
-      },
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  };
-
   return (
-    <div className="p-4 max-w-xl mx-auto">
-      <h2 className="text-xl font-bold mb-4">Checkout</h2>
-
-      <div className="space-y-3">
-        {["name", "email", "phone", "address"].map((field) => (
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6"
+    >
+      {/* Left: Shipping Form */}
+      <div>
+        <h2 className="text-xl font-bold mb-4">Contact & Shipping</h2>
+        <div className="space-y-3">
           <input
-            key={field}
             type="text"
-            name={field}
-            value={form[field]}
+            name="name"
+            placeholder="Full Name"
+            value={form.name}
             onChange={handleChange}
-            placeholder={field[0].toUpperCase() + field.slice(1)}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+          <input
+            type="tel"
+            name="phone"
+            placeholder="Phone"
+            value={form.phone}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+          <input
+            type="text"
+            name="address"
+            placeholder="Address"
+            value={form.address}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+          <input
+            type="text"
+            name="apartment"
+            placeholder="Apartment, suite, etc. (optional)"
+            value={form.apartment}
+            onChange={handleChange}
             className="w-full border px-3 py-2 rounded"
           />
-        ))}
-
-        <select
-          name="addressType"
-          value={form.addressType}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded"
-        >
-          <option>Home</option>
-          <option>Work</option>
-          <option>Other</option>
-        </select>
-
-        {/* OTP Verification */}
-        <PhoneOtpVerification
-          phone={form.phone.replace(/\s/g, "")}
-          onVerify={setIsVerified}
-        />
+          <input
+            type="text"
+            name="city"
+            placeholder="City"
+            value={form.city}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+          <input
+            type="text"
+            name="state"
+            placeholder="State"
+            value={form.state}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+          <input
+            type="text"
+            name="pincode"
+            placeholder="PIN Code"
+            value={form.pincode}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
 
         <button
-          onClick={handlePlaceOrder}
-          disabled={!isVerified || isPlacingOrder}
-          className={`w-full mt-4 py-2 rounded text-white ${
-            isVerified ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"
-          }`}
+          type="submit"
+          className="mt-6 w-full py-2 rounded bg-black text-white hover:bg-gray-800"
         >
-          {isPlacingOrder ? "Placing Order..." : "Place Order & Pay"}
+          Continue to Shipping
         </button>
       </div>
-    </div>
+
+      {/* Right: Order Summary */}
+      <div className="bg-gray-100 p-4 rounded shadow-md">
+        <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+        <ul className="divide-y">
+          {cart.map((item, i) => (
+            <li key={i} className="py-2 flex justify-between">
+              <span>{item.name}</span>
+              <span>₹{item.price * item.quantity}</span>
+            </li>
+          ))}
+        </ul>
+        <hr className="my-4" />
+        <div className="flex justify-between font-semibold">
+          <span>Total:</span>
+          <span>₹{total}</span>
+        </div>
+      </div>
+    </form>
   );
 };
 

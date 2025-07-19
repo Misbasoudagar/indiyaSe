@@ -16,6 +16,7 @@ const Homepage = () => {
         : `http://localhost:5000/api/products`;
       const res = await axios.get(url);
       setProducts(res.data);
+      console.log("Fetched products:", res.data);
     } catch (err) {
       console.error("Error loading products:", err);
     }
@@ -170,7 +171,8 @@ const Homepage = () => {
 </div>
 
   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    {products.map((product) => (
+  {Array.isArray(products) &&
+  products.map((product) => (
       <div key={product._id} className="bg-white shadow rounded-lg overflow-hidden">
         <img src={product.image} alt={product.name} className="w-full h-40 object-cover" />
         <div className="p-4">
@@ -184,7 +186,7 @@ const Homepage = () => {
                 </Link>
         </div>
       </div>
-    ))}
+   ))}
   </div>
 </section>
 
