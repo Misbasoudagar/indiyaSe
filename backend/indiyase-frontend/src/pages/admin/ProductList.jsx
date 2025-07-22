@@ -15,7 +15,8 @@ const ProductList = () => {
       setLoading(true);
       setError(null);
       const response = await axios.get(`${API_BASE}/api/products`);
-      setProducts(response.data);
+      const data = response.data?.data || [];
+      setProducts(data);
     } catch (err) {
       console.error("Fetch products error:", err);
       setError(err.response?.data?.message || err.message);
@@ -30,7 +31,7 @@ const ProductList = () => {
       try {
         await axios.delete(`${API_BASE}/api/products/${id}`);
         toast.success("Product deleted successfully");
-        fetchProducts(); // Refresh the list
+        fetchProducts();
       } catch (err) {
         console.error("Delete product error:", err);
         toast.error(err.response?.data?.message || "Failed to delete product");
@@ -42,18 +43,14 @@ const ProductList = () => {
     fetchProducts();
   }, []);
 
-  if (loading) {
-    return <div>Loading products...</div>;
-  }
-
-  if (error) {
+  if (loading) return <div>Loading products...</div>;
+  if (error)
     return (
       <div>
         <p>Error: {error}</p>
         <button onClick={fetchProducts}>Retry</button>
       </div>
     );
-  }
 
   return (
     <div className="admin-product-container">
@@ -76,6 +73,7 @@ const ProductList = () => {
               <th>#</th>
               <th>Name</th>
               <th>Price</th>
+              <th>Category</th>
               <th>Image</th>
               <th>Actions</th>
             </tr>
@@ -86,16 +84,24 @@ const ProductList = () => {
                 <td>{index + 1}</td>
                 <td>{product.name}</td>
                 <td>₹{product.price}</td>
+                <td>{product.category}</td>
                 <td>
-                  {product.image && (
-                    <img 
-                      src={`${API_BASE}${product.image}`} 
+                  {product.image ? (
+                    <img
+                      src={
+                        product.image.startsWith("http")
+                          ? product.image
+                          : `${API_BASE}${product.image}`
+                      }
                       alt={product.name}
                       className="product-img"
+                      style={{ width: "60px", height: "60px", objectFit: "cover" }}
                       onError={(e) => {
                         e.target.src = "https://via.placeholder.com/100";
                       }}
                     />
+                  ) : (
+                    <span style={{ color: "#888" }}>No Image</span>
                   )}
                 </td>
                 <td className="actions">
