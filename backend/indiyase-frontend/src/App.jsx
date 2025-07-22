@@ -17,7 +17,8 @@ import Adminsellerlist from "./pages/admin/Adminsellerlist";
 import HomePage from './pages/HomePage';
 import Login from './pages/LoginPage';
 import Register from './pages/RegisterPage';
-import ProductList from "./pages/ProductList";
+import ProductList from "./pages/admin/ProductList";  // ✅ Corrected
+
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from './pages/NotFound';

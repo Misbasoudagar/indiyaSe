@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 const path = require("path");
 
 
+
 dotenv.config();
 connectDB(); // ✅ Only one connection
 
@@ -32,7 +33,7 @@ const cartRoutes = require('./routes/cartRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const adminOrderRoutes = require('./routes/adminOrderRoutes');
 const adminUserRoutes = require('./routes/adminUserRoutes');
-const userRoutes = require('./routes/userRoutes');
+const userRoutes = require('./routes/users.routes');
 const sellerRoutes = require('./routes/sellerroutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
@@ -43,8 +44,8 @@ app.use('/api/wallet', walletRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/orders', adminOrderRoutes);
-app.use('/api/admin/users', adminUserRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/admin', require('./routes/adminUserRoutes')); 
+app.use('/api/admin/users', userRoutes);
 
 app.use('/api/sellers', sellerRoutes);
 app.use('/api/payment', paymentRoutes);

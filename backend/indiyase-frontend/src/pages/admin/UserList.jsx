@@ -1,51 +1,54 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const UserList = () => {
-  const [users, setUsers] = useState([]); // default to empty array
-  const [error, setError] = useState("");
+function UserList() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/admin/users")
-      .then((res) => {
-        if (Array.isArray(res.data)) {
-          setUsers(res.data);
-        } else {
-          setError("Unexpected data format");
-          setUsers([]);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to fetch users", err);
-        setError("Failed to load users");
-      });
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/admin/users');
+        setUsers(response.data);
+      } catch (err) {
+        setError('Failed to load users. Please check the server connection.');
+        console.error('Fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
   }, []);
+
+  if (loading) return <div>Loading users...</div>;
+  if (error) return <div className="text-danger">{error}</div>;
 
   return (
     <div>
-      <h3>User Management</h3>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <table>
+      <h1>User Management</h1>
+      <table className="table">
         <thead>
           <tr>
             <th>Email</th>
             <th>Role</th>
             <th>Active</th>
+            {/* Add more columns as needed */}
           </tr>
         </thead>
         <tbody>
-          {users.map((user, idx) => (
-            <tr key={idx}>
+          {users.map(user => (
+            <tr key={user.id}>
               <td>{user.email}</td>
               <td>{user.role}</td>
-              <td>{user.isActive ? "Yes" : "No"}</td>
+              <td>{user.active ? 'Yes' : 'No'}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
-};
+}
 
 export default UserList;

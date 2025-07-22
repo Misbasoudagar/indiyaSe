@@ -1,7 +1,7 @@
 // backend/routes/adminUserRoutes.js
 const express = require("express");
 const router = express.Router();
-const User = require("../models/userModel");
+
 const { getAllUsers } = require("../controllers/adminUserController");
 
 router.get("/users", getAllUsers);
