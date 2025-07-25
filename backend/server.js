@@ -5,15 +5,15 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const connectDB = require("./config/db");
 const path = require("path");
-
+const authRoutes = require('./routes/auth');
 
 
 dotenv.config();
-connectDB(); // ✅ Only one connection
+connectDB(); // ✅ Connect to MongoDB
 
 const app = express();
 
-// CORS setup
+// ✅ CORS setup
 const corsOptions = {
   origin: "http://localhost:5173",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -24,7 +24,7 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 app.use(express.json());
 
-// Routes
+// ✅ Route imports
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -32,11 +32,12 @@ const walletRoutes = require('./routes/walletRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const adminOrderRoutes = require('./routes/adminOrderRoutes');
-const adminUserRoutes = require('./routes/adminUserRoutes');
-const userRoutes = require('./routes/users.routes');
+// const adminUserRoutes = require('./routes/adminUserRoutes'); ❌ Removed or comment out
+const usersRoutes = require('./routes/userRoutes');
 const sellerRoutes = require('./routes/sellerroutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
+// ✅ Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
@@ -44,17 +45,16 @@ app.use('/api/wallet', walletRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/orders', adminOrderRoutes);
-app.use('/api/admin', require('./routes/adminUserRoutes')); 
-app.use('/api/admin/users', userRoutes);
-
+// ❌ Removed buggy adminUserRoutes mount
+// app.use('/api/admin', require('./routes/adminUserRoutes')); 
+app.use('/api/admin/users', usersRoutes);
 app.use('/api/sellers', sellerRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/uploads', express.static('uploads'));
+app.use('/api/auth', authRoutes);
 
-app.use('/api/sellers', sellerRoutes); // ✅ Mount route
 
-
-// Default Routes
+// ✅ Default routes
 app.get("/", (req, res) => res.send("🚀 Indiyase API Running"));
 app.get("/api", (req, res) => res.send("✅ Indiyase API is live"));
 

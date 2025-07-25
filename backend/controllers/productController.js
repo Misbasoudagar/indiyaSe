@@ -1,10 +1,24 @@
 const Product = require('../models/Product');
 
 // Helper function to add full image URL
-const addImageUrl = (product, req) => ({
-  ...product._doc,
-  image: product.image ? `${req.protocol}://${req.get('host')}${product.image}` : null
-});
+const addImageUrl = (product, req) => {
+  // Handle cases where image might be undefined
+  const imagePath = product.image || '';
+  
+  // Only create full URL if we have a valid image path
+  if (imagePath && imagePath.startsWith('/')) {
+    return {
+      ...product._doc ? product._doc : product,
+      image: `${req.protocol}://${req.get('host')}${imagePath}`
+    };
+  }
+  
+  // Return product with original image value
+  return {
+    ...product._doc ? product._doc : product,
+    image: imagePath
+  };
+};
 
 exports.getAllProducts = async (req, res) => {
   try {
@@ -27,7 +41,7 @@ exports.getAllProducts = async (req, res) => {
 
     const products = await Product.find(query)
       .sort(sortOptions)
-      .lean(); // Using lean() for better performance
+      .lean();
 
     // Add full URLs to images
     const productsWithUrls = products.map(product => 
@@ -40,11 +54,11 @@ exports.getAllProducts = async (req, res) => {
       data: productsWithUrls
     });
   } catch (err) {
-    console.error('Error fetching products:', err);
+    console.error('❌ Error fetching products:', err.message, err.stack);
     res.status(500).json({
       success: false,
       error: 'Server Error',
-      message: err.message
+      message: 'Failed to retrieve products'
     });
   }
 };
@@ -64,11 +78,11 @@ exports.getProductById = async (req, res) => {
       data: addImageUrl(product, req)
     });
   } catch (err) {
-    console.error('Error fetching product:', err);
+    console.error('❌ Error fetching product:', err.message, err.stack);
     res.status(500).json({
       success: false,
       error: 'Server Error',
-      message: err.message
+      message: 'Failed to retrieve product'
     });
   }
 };
@@ -93,12 +107,15 @@ exports.createProduct = async (req, res) => {
       });
     }
 
+    // Handle file upload presence
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+
     const productData = {
       name,
       description,
       price: Number(price),
       category,
-      image: req.file ? `/uploads/${req.file.filename}` : null
+      image: imagePath
     };
 
     const product = await Product.create(productData);
@@ -108,7 +125,7 @@ exports.createProduct = async (req, res) => {
       data: addImageUrl(product, req)
     });
   } catch (err) {
-    console.error('Error creating product:', err);
+    console.error('❌ Error creating product:', err.message, err.stack);
     
     if (err.name === 'ValidationError') {
       const errors = Object.values(err.errors).map(el => el.message);
@@ -122,7 +139,7 @@ exports.createProduct = async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Server Error',
-      message: err.message
+      message: 'Failed to create product'
     });
   }
 };
@@ -154,7 +171,7 @@ exports.updateProduct = async (req, res) => {
       data: addImageUrl(product, req)
     });
   } catch (err) {
-    console.error('Error updating product:', err);
+    console.error('❌ Error updating product:', err.message, err.stack);
     
     if (err.name === 'ValidationError') {
       const errors = Object.values(err.errors).map(el => el.message);
@@ -168,7 +185,7 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Server Error',
-      message: err.message
+      message: 'Failed to update product'
     });
   }
 };
@@ -189,11 +206,11 @@ exports.deleteProduct = async (req, res) => {
       data: {}
     });
   } catch (err) {
-    console.error('Error deleting product:', err);
+    console.error('❌ Error deleting product:', err.message, err.stack);
     res.status(500).json({
       success: false,
       error: 'Server Error',
-      message: err.message
+      message: 'Failed to delete product'
     });
   }
 };

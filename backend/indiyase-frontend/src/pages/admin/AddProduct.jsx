@@ -1,21 +1,23 @@
-// src/components/AddProduct.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const AddProduct = () => {
+  const navigate = useNavigate();
+
   const [product, setProduct] = useState({
     name: '',
     description: '',
     price: '',
-    category: 'Women Ethnic'
+    category: 'Women Ethnic',
   });
 
   const [imageFile, setImageFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const API_BASE_URL = 'http://localhost:5000'; // or your actual backend URL
+  const API_BASE_URL = 'http://localhost:5000';
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,17 +40,19 @@ const AddProduct = () => {
       if (imageFile) formData.append('image', imageFile);
 
       await axios.post(`${API_BASE_URL}/api/products`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      toast.success('Product added successfully!');
+      toast.success('✅ Product added successfully!');
       setProduct({ name: '', description: '', price: '', category: 'Women Ethnic' });
       setImageFile(null);
+
+      setTimeout(() => {
+        navigate('/admin/products'); // Redirect to Product List page
+      }, 1000);
     } catch (err) {
       console.error(err);
-      const errorMessage = err.response?.data?.message || 'Failed to add product';
+      const errorMessage = err.response?.data?.error || '❌ Failed to add product';
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -69,7 +73,9 @@ const AddProduct = () => {
           <option value="Medicines">Medicines</option>
         </select>
         <input type="file" accept="image/*" onChange={handleImageChange} />
-        <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Adding...' : 'Add Product'}</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Adding...' : 'Add Product'}
+        </button>
       </form>
     </div>
   );

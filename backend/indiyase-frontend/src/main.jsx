@@ -5,17 +5,29 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import CartProvider from "./context/CartContext";
 
-// ✅ Import ToastContainer and styles
+// Toast imports (optimized)
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
+root.render(
   <React.StrictMode>
     <BrowserRouter>
       <CartProvider>
         <App />
-        {/* ✅ Add ToastContainer */}
-        <ToastContainer position="top-right" autoClose={3000} />
+        <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light" // or "dark"/"colored"
+        />
       </CartProvider>
     </BrowserRouter>
   </React.StrictMode>

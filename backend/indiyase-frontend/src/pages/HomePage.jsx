@@ -4,7 +4,7 @@ import './homepage.css';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import ProductCard from "../components/ProductCard";
 
 const Homepage = () => {
   const [products, setProducts] = useState([]);  
@@ -15,12 +15,13 @@ const Homepage = () => {
         ? `http://localhost:5000/api/products?category=${category}`
         : `http://localhost:5000/api/products`;
       const res = await axios.get(url);
-      setProducts(res.data);
-      console.log("Fetched products:", res.data);
+      setProducts(res.data.data); // ✅ fixed this line
+      console.log("Fetched products:", res.data.data);
     } catch (err) {
       console.error("Error loading products:", err);
     }
   };
+  
   
   useEffect(() => {
     fetchProducts();
@@ -156,39 +157,25 @@ const Homepage = () => {
         </div>
       </div>
 {/* PRODUCTS ON HOMEPAGE */}
-<section className="my-10 px-4">
-  <h2 className="text-2xl font-bold text-center mb-6">Featured Products</h2>
-  <div className="flex justify-center gap-4 mb-4 flex-wrap">
-  {['All', 'medicine', 'wellness', 'beauty', 'electronics'].map((cat, i) => (
-    <button
-      key={i}
-      onClick={() => fetchProducts(cat === 'All' ? '' : cat)}
-      className="bg-orange-100 hover:bg-orange-300 px-3 py-1 rounded-full text-sm"
-    >
-      {cat}
-    </button>
-  ))}
-</div>
+{Array.isArray(products) && products.length > 0 && (
+  <section className="my-10 px-4">
+    <h2 className="text-2xl font-bold text-center mb-6">Shop by Category</h2>
 
-  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-  {Array.isArray(products) &&
-  products.map((product) => (
-      <div key={product._id} className="bg-white shadow rounded-lg overflow-hidden">
-        <img src={product.image} alt={product.name} className="w-full h-40 object-cover" />
-        <div className="p-4">
-          <h3 className="font-semibold text-sm">{product.name}</h3>
-          <p className="text-orange-600 font-bold">₹{product.price}</p>
-          <Link
-                  to={`/product/${product._id}`}
-                  className="text-blue-500 text-sm hover:underline"
-                >
-                  View Details
-                </Link>
+    {['Women Ethnic', 'Men', 'Kids', 'Medicines'].map((category) => (
+      <div key={category} className="mb-10">
+        <h3 className="text-xl font-semibold mb-4">{category}</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {products
+            .filter((product) => product.category === category)
+            .map((product) => (
+              <ProductCard key={product._id} product={product} />
+          ))}
         </div>
       </div>
-   ))}
-  </div>
-</section>
+    ))}
+  </section>
+)}
+
 
       {/* MAIN CONTENT - Contained width */}
       <main className="flex-grow w-full px-4 py-6 md:py-10">

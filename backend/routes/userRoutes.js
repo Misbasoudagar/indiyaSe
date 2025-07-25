@@ -3,18 +3,56 @@ const router = express.Router();
 const User = require('../models/User');
 
 // ✅ Get all users
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const users = await User.find().select('-password');
-    res.json(users);
+    const users = await User.find({});
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error.message);
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+});
+
+// ✅ Update user (name, email, wallet, customerId if needed)
+router.put("/:id", async (req, res) => {
+  const { name, email, wallet, customerId } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        email,
+        wallet,
+        customerId: customerId || `CUS${req.params.id.slice(-6).toUpperCase()}`
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "User updated successfully", user: updatedUser });
   } catch (err) {
-    console.error('❌ Failed to fetch users:', err);
-    res.status(500).json({ error: 'Failed to fetch users' });
+    console.error("❌ Failed to update user:", err);
+    res.status(500).json({ error: "Failed to update user" });
+  }
+});
+
+// ✅ Delete a user
+router.delete("/:id", async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("❌ Error deleting user:", error.message);
+    res.status(500).json({ message: "Error deleting user" });
   }
 });
 
 // ✅ Update user role or active status
-router.put('/:id', async (req, res) => {
+router.put('/status/:id', async (req, res) => {
   const { role, isActive } = req.body;
 
   try {

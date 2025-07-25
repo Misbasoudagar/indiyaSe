@@ -29,7 +29,22 @@ const userSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  customerId: {   // ✅ NEW
+    type: String,
+    unique: true
   }
+}, {
+  timestamps: true // ✅ Adds createdAt & updatedAt
+});
+
+// 🧠 Auto-generate customerId before saving
+userSchema.pre('save', async function (next) {
+  if (!this.customerId) {
+    const randomId = Math.floor(100000 + Math.random() * 900000);
+    this.customerId = `CUST${randomId}`;
+  }
+  next();
 });
 
 module.exports = mongoose.model('User', userSchema);

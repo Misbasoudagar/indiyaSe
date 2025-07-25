@@ -1,6 +1,9 @@
 import React from "react";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { Routes, Route } from "react-router-dom";
+
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -27,7 +30,7 @@ import MyOrdersPage from './pages/MyOrdersPage';
 import WalletPage from './pages/WalletPage';
 import Uploadprescription from "./pages/Uploadprescription";
 import Becomeaseller from "./pages/Becomeaseller";
-import CategoryProducts from "./pages/CategoryProducts"; // ✅ Import
+import CategoryProducts from "./pages/CategoryProducts";
 import ProductGrid from "./pages/ProductGrid";
 import CategoryPage from './pages/CategoryPage';
 import ShippingPage from './pages/ShippingPage';
@@ -39,25 +42,11 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const App = () => {
   return (
-    <Routes>
-      {/* ✅ Public/User Routes */}
-      <Route path="/" element={<HomePage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/products" element={<ProductList />} />
-      <Route path="/orders" element={<OrdersPage />} />
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="/wallet" element={<WalletPage />} />
-      <Route path="/my-orders" element={<MyOrdersPage />} />
-      <Route path="/upload-prescription" element={<Uploadprescription />} />
-      <Route path="/become-seller" element={<Becomeaseller />} />
-      <Route path="*" element={<NotFound />} />
-      <Route path="/category/:categoryName" element={<CategoryProducts />} />
-      <Route path="/category/:category" element={<ProductGrid />} />
-      <Route path="/shipping" element={<ShippingPage />} />
-      <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
-      <Route path="/thankyou" element={<ThankYouPage />} />
+    <>
+      {/* ✅ Toast container globally placed */}
+      <ToastContainer />
+
+      <Routes>
         {/* ✅ Public/User Routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
@@ -70,10 +59,16 @@ const App = () => {
         <Route path="/my-orders" element={<MyOrdersPage />} />
         <Route path="/upload-prescription" element={<Uploadprescription />} />
         <Route path="/become-seller" element={<Becomeaseller />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="/category/:categoryName" element={<CategoryProducts />} />
+        <Route path="/category/:category" element={<ProductGrid />} />
         <Route path="/collections/ethnic-1" element={<CategoryPage />} />
-      {/* ✅ Admin Login - outside layout */}
-      <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/shipping" element={<ShippingPage />} />
+        <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
+        <Route path="/thankyou" element={<ThankYouPage />} />
+        <Route path="*" element={<NotFound />} />
+
+        {/* ✅ Admin Login - outside layout */}
+        <Route path="/admin/login" element={<AdminLogin />} />
 
         {/* ✅ Admin Panel Routes - inside layout */}
         <Route path="/admin" element={<AdminLayout />}>
@@ -85,10 +80,9 @@ const App = () => {
           <Route path="wallets" element={<AdminWallet />} />
           <Route path="users" element={<UserList />} />
           <Route path="sellers" element={<Adminsellerlist />} />
-          
         </Route>
       </Routes>
-    
+    </>
   );
 };
 
