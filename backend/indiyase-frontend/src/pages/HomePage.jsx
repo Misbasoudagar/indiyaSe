@@ -9,23 +9,45 @@ import ProductCard from "../components/ProductCard";
 const Homepage = () => {
   const [products, setProducts] = useState([]);  
 
-  const fetchProducts = async (category = '') => {
+  const fetchProducts = async () => {
     try {
-      const url = category
-        ? `http://localhost:5000/api/products?category=${category}`
-        : `http://localhost:5000/api/products`;
-      const res = await axios.get(url);
-      setProducts(res.data.data); // ✅ fixed this line
-      console.log("Fetched products:", res.data.data);
+      let url = `${API_BASE}/products`;
+      if (selectedCategory !== "All") {
+        url = `${API_BASE}/products/category/${encodeURIComponent(selectedCategory)}`;
+      }
+  
+      const response = await axios.get(url);
+      setProducts(response.data.data);
     } catch (err) {
-      console.error("Error loading products:", err);
+      console.error("Error fetching products", err);
+      setError("Failed to load products");
+    } finally {
+      setLoading(false);
     }
   };
   
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
   
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [selectedCategory]);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const url =
+          selectedCategory === "All"
+            ? `${API_BASE}/api/products`
+            : `${API_BASE}/api/products/category/${encodeURIComponent(selectedCategory)}`;
+        const response = await axios.get(url);
+        setProducts(response.data.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchProducts();
+  }, [selectedCategory]);
+  
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -157,24 +179,55 @@ const Homepage = () => {
         </div>
       </div>
 {/* PRODUCTS ON HOMEPAGE */}
+{/* PRODUCTS ON HOMEPAGE */}
 {Array.isArray(products) && products.length > 0 && (
   <section className="my-10 px-4">
     <h2 className="text-2xl font-bold text-center mb-6">Shop by Category</h2>
 
-    {['Women Ethnic', 'Men', 'Kids', 'Medicines'].map((category) => (
-      <div key={category} className="mb-10">
-        <h3 className="text-xl font-semibold mb-4">{category}</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {products
-            .filter((product) => product.category === category)
-            .map((product) => (
+    {[
+      'Women Ethnic',
+      'Women Western',
+      'Men Wears',
+      'Kids',
+      'Electronics',
+      'Beauty',
+      'Grocery',
+      'Home & Kitchen',
+      'Jewellery',
+      'Footwears',
+      'Books'
+    ].map((category) => {
+      const filtered = products.filter((p) => p.category === category);
+      if (filtered.length === 0) return null;
+
+      return (
+        <div key={category} className="mb-10">
+          <h3 className="text-xl font-semibold mb-4">{category}</h3>
+          <div className="flex flex-wrap gap-2 mb-4">
+  {["All", "Women Ethnic", "Men", "Kids", "Footwear", "Jewellery"].map((cat) => (
+    <button
+      key={cat}
+      onClick={() => setSelectedCategory(cat)}
+      className={`px-3 py-1 rounded-full border ${
+        selectedCategory === cat ? "bg-black text-white" : "bg-white text-black"
+      }`}
+    >
+      {cat}
+    </button>
+  ))}
+</div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {filtered.map((product) => (
               <ProductCard key={product._id} product={product} />
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    ))}
+      );
+    })}
   </section>
 )}
+
 
 
       {/* MAIN CONTENT - Contained width */}

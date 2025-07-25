@@ -23,16 +23,15 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ PUT /api/wallet/:email/update - Update wallet balance (add/deduct)
+// ✅ PUT /api/wallet/:email/update - Update wallet balance
 router.put("/:email/update", async (req, res) => {
   const { email } = req.params;
   const { amount } = req.body;
 
   try {
-    let wallet = await Wallet.findOne({ email }); // or use `userEmail` depending on model
+    let wallet = await Wallet.findOne({ email });
 
     if (!wallet) {
-      // Create wallet if it doesn't exist
       wallet = new Wallet({ email, balance: amount });
     } else {
       wallet.balance += amount;
@@ -46,7 +45,7 @@ router.put("/:email/update", async (req, res) => {
   }
 });
 
-// ✅ POST /api/wallet/seed - Seed a test wallet (development only)
+// ✅ POST /api/wallet/seed - Seed test wallet (dev only)
 router.post("/seed", async (req, res) => {
   try {
     await Wallet.deleteMany({});

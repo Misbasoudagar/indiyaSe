@@ -1,60 +1,48 @@
 const Product = require('../models/Product');
 
-// Helper function to add full image URL
+// 🔧 Helper: Add full image URL
 const addImageUrl = (product, req) => {
-  // Handle cases where image might be undefined
-  const imagePath = product.image || '';
-  
-  // Only create full URL if we have a valid image path
-  if (imagePath && imagePath.startsWith('/')) {
-    return {
-      ...product._doc ? product._doc : product,
-      image: `${req.protocol}://${req.get('host')}${imagePath}`
-    };
-  }
-  
-  // Return product with original image value
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const image = product.image || '';
+
   return {
-    ...product._doc ? product._doc : product,
-    image: imagePath
+    ...('_doc' in product ? product._doc : product),
+    image: image.startsWith('/') ? `${baseUrl}${image}` : image
   };
 };
 
+// ✅ GET all products (with filters & sorting)
 exports.getAllProducts = async (req, res) => {
   try {
     const { category, minPrice, maxPrice, sort } = req.query;
     const query = {};
-    
-    // Build query dynamically
-    if (category) query.category = category;
+
+    // ✅ Case-insensitive category match (fix for frontend query mismatch)
+    if (category) {
+      query.category = { $regex: new RegExp(`^${category}$`, 'i') }; 
+    }
+
     if (minPrice || maxPrice) {
       query.price = {};
       if (minPrice) query.price.$gte = Number(minPrice);
       if (maxPrice) query.price.$lte = Number(maxPrice);
     }
 
-    // Sorting
     const sortOptions = {};
     if (sort === 'price_asc') sortOptions.price = 1;
-    if (sort === 'price_desc') sortOptions.price = -1;
-    if (sort === 'newest') sortOptions.createdAt = -1;
+    else if (sort === 'price_desc') sortOptions.price = -1;
+    else if (sort === 'newest') sortOptions.createdAt = -1;
 
-    const products = await Product.find(query)
-      .sort(sortOptions)
-      .lean();
-
-    // Add full URLs to images
-    const productsWithUrls = products.map(product => 
-      addImageUrl(product, req)
-    );
+    const products = await Product.find(query).sort(sortOptions).lean();
+    const productsWithUrls = products.map(p => addImageUrl(p, req));
 
     res.json({
       success: true,
-      count: products.length,
+      count: productsWithUrls.length,
       data: productsWithUrls
     });
   } catch (err) {
-    console.error('❌ Error fetching products:', err.message, err.stack);
+    console.error('❌ Error fetching products:', err.message);
     res.status(500).json({
       success: false,
       error: 'Server Error',
@@ -63,6 +51,7 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
+// ✅ GET product by ID
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -78,7 +67,7 @@ exports.getProductById = async (req, res) => {
       data: addImageUrl(product, req)
     });
   } catch (err) {
-    console.error('❌ Error fetching product:', err.message, err.stack);
+    console.error('❌ Error fetching product:', err.message);
     res.status(500).json({
       success: false,
       error: 'Server Error',
@@ -87,11 +76,11 @@ exports.getProductById = async (req, res) => {
   }
 };
 
+// ✅ CREATE product
 exports.createProduct = async (req, res) => {
   try {
     const { name, description, price, category } = req.body;
-    
-    // Enhanced validation
+
     if (!name || !price || !category) {
       return res.status(400).json({
         success: false,
@@ -107,35 +96,35 @@ exports.createProduct = async (req, res) => {
       });
     }
 
-    // Handle file upload presence
-    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+    const imagePath = req.file
+  ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+  : null;
 
-    const productData = {
-      name,
-      description,
-      price: Number(price),
-      category,
-      image: imagePath
-    };
+const product = await Product.create({
+  name,
+  description,
+  price: Number(price),
+  category,
+  image: imagePath // ✅ Now full URL saved in DB
+});
 
-    const product = await Product.create(productData);
 
     res.status(201).json({
       success: true,
       data: addImageUrl(product, req)
     });
   } catch (err) {
-    console.error('❌ Error creating product:', err.message, err.stack);
-    
+    console.error('❌ Error creating product:', err.message);
+
     if (err.name === 'ValidationError') {
-      const errors = Object.values(err.errors).map(el => el.message);
+      const messages = Object.values(err.errors).map(el => el.message);
       return res.status(400).json({
         success: false,
         error: 'Validation Error',
-        messages: errors
+        messages
       });
     }
-    
+
     res.status(500).json({
       success: false,
       error: 'Server Error',
@@ -144,11 +133,12 @@ exports.createProduct = async (req, res) => {
   }
 };
 
+// ✅ UPDATE product
 exports.updateProduct = async (req, res) => {
   try {
     const updates = {
       ...req.body,
-      ...(req.file && { image: `/uploads/${req.file.filename}` })
+      ...(req.file && { image: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` })
     };
 
     if (updates.price) updates.price = Number(updates.price);
@@ -171,17 +161,17 @@ exports.updateProduct = async (req, res) => {
       data: addImageUrl(product, req)
     });
   } catch (err) {
-    console.error('❌ Error updating product:', err.message, err.stack);
-    
+    console.error('❌ Error updating product:', err.message);
+
     if (err.name === 'ValidationError') {
-      const errors = Object.values(err.errors).map(el => el.message);
+      const messages = Object.values(err.errors).map(el => el.message);
       return res.status(400).json({
         success: false,
         error: 'Validation Error',
-        messages: errors
+        messages
       });
     }
-    
+
     res.status(500).json({
       success: false,
       error: 'Server Error',
@@ -190,10 +180,11 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
+// ✅ DELETE product
 exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
-    
+
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -206,11 +197,35 @@ exports.deleteProduct = async (req, res) => {
       data: {}
     });
   } catch (err) {
-    console.error('❌ Error deleting product:', err.message, err.stack);
+    console.error('❌ Error deleting product:', err.message);
     res.status(500).json({
       success: false,
       error: 'Server Error',
       message: 'Failed to delete product'
+    });
+  }
+};
+// ✅ GET products by category (separate API)
+exports.getProductsByCategory = async (req, res) => {
+  try {
+    const categoryName = req.params.categoryName;
+    const products = await Product.find({
+      category: { $regex: new RegExp(`^${categoryName}$`, 'i') } // case-insensitive match
+    }).lean();
+
+    const productsWithUrls = products.map(p => addImageUrl(p, req));
+
+    res.json({
+      success: true,
+      count: productsWithUrls.length,
+      data: productsWithUrls
+    });
+  } catch (err) {
+    console.error('❌ Error fetching products by category:', err.message);
+    res.status(500).json({
+      success: false,
+      error: 'Server Error',
+      message: 'Failed to retrieve category products'
     });
   }
 };

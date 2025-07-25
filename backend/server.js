@@ -5,12 +5,15 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const connectDB = require("./config/db");
 const path = require("path");
-
+const productRoutes = require('./routes/productRoutes');
 
 dotenv.config();
 connectDB(); // ✅ Only one connection
+const app = express(); // 🔴 This line MUST come BEFORE route mounting
 
-const app = express();
+
+
+
 
 // CORS setup
 const corsOptions = {
@@ -23,35 +26,30 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 app.use(express.json());
 
-// Routes
-const authRoutes = require('./routes/authRoutes');
-const productRoutes = require('./routes/productRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const walletRoutes = require('./routes/walletRoutes');
-const cartRoutes = require('./routes/cartRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const adminOrderRoutes = require('./routes/adminOrderRoutes');
-const adminUserRoutes = require('./routes/adminUserRoutes');
-const userRoutes = require('./routes/userRoutes');
-const sellerRoutes = require('./routes/sellerroutes');
-const paymentRoutes = require('./routes/paymentRoutes');
-
-app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/wallet', walletRoutes);
-app.use('/api/cart', cartRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/admin/orders', adminOrderRoutes);
-app.use('/api/admin/users', adminUserRoutes);
-app.use('/api/users', userRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// =======================
+// 🔍 Debug route loading
+// =======================
+console.log("🔁 Mounting Routes...");
 
-app.use('/api/sellers', sellerRoutes);
-app.use('/api/payment', paymentRoutes);
-app.use('/uploads', express.static('uploads'));
-
-app.use('/api/sellers', sellerRoutes); // ✅ Mount route
-
+try {
+  app.use('/api/auth', require('./routes/authRoutes')); console.log("✅ /api/auth loaded");
+  app.use('/api/products', require('./routes/productRoutes')); console.log("✅ /api/products loaded");
+  app.use('/api/orders', require('./routes/orderRoutes')); console.log("✅ /api/orders loaded");
+  app.use('/api/wallet', require('./routes/walletRoutes')); console.log("✅ /api/wallet loaded");
+  app.use('/api/cart', require('./routes/cartRoutes')); console.log("✅ /api/cart loaded");
+  app.use('/api/admin', require('./routes/adminRoutes')); console.log("✅ /api/admin loaded");
+  app.use('/api/admin/orders', require('./routes/adminOrderRoutes')); console.log("✅ /api/admin/orders loaded");
+  app.use('/api/admin/users', require('./routes/adminUserRoutes')); console.log("✅ /api/admin/users loaded");
+  app.use('/api/users', require('./routes/userRoutes')); console.log("✅ /api/users loaded");
+  app.use('/api/sellers', require('./routes/sellerroutes')); console.log("✅ /api/sellers loaded");
+  app.use('/api/payment', require('./routes/paymentRoutes')); console.log("✅ /api/payment loaded");
+   console.log("✅ /uploads static loaded");
+} catch (err) {
+  console.error("❌ Crash while loading route:", err);
+  process.exit(1);
+}
 
 // Default Routes
 app.get("/", (req, res) => res.send("🚀 Indiyase API Running"));

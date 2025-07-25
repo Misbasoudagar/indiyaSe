@@ -68,9 +68,16 @@ const AddProduct = () => {
         <input type="number" name="price" placeholder="Price" value={product.price} onChange={handleChange} required />
         <select name="category" value={product.category} onChange={handleChange}>
           <option value="Women Ethnic">Women Ethnic</option>
-          <option value="Men">Men</option>
+          <option value="Women Western">Women Western</option>
+          <option value="Men Wears">Men Wears</option>
           <option value="Kids">Kids</option>
-          <option value="Medicines">Medicines</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Beauty">Beauty</option>
+          <option value="Grocery">Grocery</option>
+          <option value="Home & Kitchen">Home & Kitchen</option>
+          <option value="Jewellery">Jewellery</option>
+          <option value="Footwears">Footwears</option>
+          <option value="Books">Books</option>
         </select>
         <input type="file" accept="image/*" onChange={handleImageChange} />
         <button type="submit" disabled={isSubmitting}>

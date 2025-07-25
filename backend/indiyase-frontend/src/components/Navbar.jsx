@@ -3,14 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 
 const Navbar = () => {
-  const { state, dispatch } = useContext(StoreContext);
   const { cart } = useContext(CartContext);
   const navigate = useNavigate();
-  const user = state.user;
+
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    dispatch({ type: "LOGOUT" });
     navigate("/login");
   };
 
