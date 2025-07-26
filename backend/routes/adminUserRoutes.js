@@ -3,6 +3,8 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/userModel");
 
+const { getAllUsers } = require("../controllers/adminUserController");
+
 // ✅ FIXED: Match /api/admin/users
 router.get("/", async (req, res) => {
   try {

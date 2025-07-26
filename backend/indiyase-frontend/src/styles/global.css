@@ -1,0 +1,86 @@
+/* Improved container behavior */
+.container {
+    width: 100%;
+    padding: 0 1rem;
+    margin: 0 auto;
+  }
+  
+  /* Better responsive handling */
+  @media (min-width: 640px) {
+    .container {
+      max-width: 640px;
+    }
+  }
+  @media (min-width: 768px) {
+    .container {
+      max-width: 768px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .container {
+      max-width: 1024px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .container {
+      max-width: 1280px;
+    }
+  }
+  
+  /* Improved scroll behavior for nav */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Better transitions */
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+  
+  /* Ensure full width images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .upload-btn {
+    background-color: #ff7f50;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  }
+  
+  .upload-btn:hover {
+    background-color: #ff4500;
+  }
+  
+  /* In global.css */
+.container-fluid {
+  width: 100%;
+  padding: 0 1rem;
+  margin: 0 auto;
+  max-width: 100% !important;
+}
+.full-width-grid {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 2rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 1280px) {
+  .full-width-grid {
+    padding: 0 4rem;
+  }
+}

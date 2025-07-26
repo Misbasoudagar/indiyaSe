@@ -1,21 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import "./ProductList.css";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deletingId, setDeletingId] = useState(null); // Track which product is being deleted
 
   const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
 
-  const fetchProducts = async () => {
+  // Wrap fetchProducts in useCallback to prevent unnecessary recreations
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await axios.get(`${API_BASE}/api/products`);
-      const data = response.data?.data || [];
+      
+      // Normalize response data
+      const data = Array.isArray(response.data) 
+        ? response.data 
+        : response.data.products || [];
+      
       setProducts(data);
     } catch (err) {
       console.error("Fetch products error:", err);
@@ -24,33 +33,42 @@ const ProductList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_BASE]);
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        await axios.delete(`${API_BASE}/api/products/${id}`);
-        toast.success("Product deleted successfully");
-        fetchProducts();
-      } catch (err) {
-        console.error("Delete product error:", err);
-        toast.error(err.response?.data?.message || "Failed to delete product");
-      }
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    
+    try {
+      setDeletingId(id); // Show loading state for this specific product
+      await axios.delete(`${API_BASE}/api/products/${id}`);
+      toast.success("Product deleted successfully");
+      await fetchProducts(); // Refresh the list
+    } catch (err) {
+      console.error("Delete product error:", err);
+      toast.error(err.response?.data?.message || "Failed to delete product");
+    } finally {
+      setDeletingId(null);
     }
   };
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
-  if (loading) return <div>Loading products...</div>;
-  if (error)
+  if (loading && products.length === 0) {
+    return <div className="loading-spinner">Loading products...</div>;
+  }
+
+  if (error) {
     return (
-      <div>
+      <div className="error-container">
         <p>Error: {error}</p>
-        <button onClick={fetchProducts}>Retry</button>
+        <button onClick={fetchProducts} className="retry-btn">
+          Retry
+        </button>
       </div>
     );
+  }
 
   return (
     <div className="admin-product-container">
@@ -67,58 +85,54 @@ const ProductList = () => {
           <Link to="/admin/add-product">Add your first product</Link>
         </div>
       ) : (
-        <table className="product-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Category</th>
-              <th>Image</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product, index) => (
-              <tr key={product._id}>
-                <td>{index + 1}</td>
-                <td>{product.name}</td>
-                <td>₹{product.price}</td>
-                <td>{product.category}</td>
-                <td>
-                  {product.image ? (
-                    <img
-                      src={
-                        product.image.startsWith("http")
-                          ? product.image
-                          : `${API_BASE}${product.image}`
-                      }
-                      alt={product.name}
-                      className="product-img"
-                      style={{ width: "60px", height: "60px", objectFit: "cover" }}
-                      onError={(e) => {
-                        e.target.src = "https://via.placeholder.com/100";
-                      }}
-                    />
-                  ) : (
-                    <span style={{ color: "#888" }}>No Image</span>
-                  )}
-                </td>
-                <td className="actions">
-                  <Link to={`/admin/products/edit/${product._id}`}>
-                    <button className="edit-btn">Edit</button>
-                  </Link>
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(product._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
+        <div className="table-responsive">
+          <table className="product-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {products.map((product, index) => (
+                <tr key={product._id}>
+                  <td>{index + 1}</td>
+                  <td>{product.name}</td>
+                  <td>₹{product.price.toLocaleString()}</td>
+                  <td>
+                    {product.image && (
+                      <img 
+                        src={product.image.startsWith('http') ? product.image : `${API_BASE}${product.image}`}
+                        alt={product.name}
+                        className="product-img"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/100";
+                          e.target.onerror = null; // Prevent infinite loop
+                        }}
+                      />
+                    )}
+                  </td>
+                  <td className="actions">
+                    <Link to={`/admin/products/edit/${product._id}`}>
+                      <button className="edit-btn">Edit</button>
+                    </Link>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(product._id)}
+                      disabled={deletingId === product._id}
+                    >
+                      {deletingId === product._id ? 'Deleting...' : 'Delete'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

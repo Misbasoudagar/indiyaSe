@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+
 const Admin = require("../models/adminModel");
 const Order = require("../models/orderModel");
-// const Product = require("../models/productModel"); // Uncomment if using Product
+const { getAllUsers } = require("../controllers/adminUserController"); // ✅ Import added
 
 // ==========================
 // 🔐 Admin Login
@@ -13,10 +14,14 @@ router.post("/login", async (req, res) => {
 
   try {
     const admin = await Admin.findOne({ email });
-    if (!admin) return res.status(401).json({ success: false, message: "Invalid credentials" });
+    if (!admin) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
 
     const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) return res.status(401).json({ success: false, message: "Invalid credentials" });
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
 
     return res.json({ success: true, message: "Login successful" });
   } catch (err) {
@@ -81,27 +86,8 @@ router.put("/orders/:id/status", async (req, res) => {
 });
 
 // ==========================
-// (Optional) Product Handlers
+// 👤 ADMIN: Get All Users
 // ==========================
-// Move these to productRoutes.js later
-
-// router.put("/:id", async (req, res) => {
-//   try {
-//     const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-//     res.json(updated);
-//   } catch (err) {
-//     res.status(400).json({ error: err.message });
-//   }
-// });
-
-// router.delete("/:id", async (req, res) => {
-//   try {
-//     await Product.findByIdAndDelete(req.params.id);
-//     res.json({ message: "Product deleted successfully" });
-//   } catch (err) {
-//     res.status(400).json({ error: err.message });
-//   }
-// });
-
+router.get("/users", getAllUsers); // ✅ ADDED: Fetch all users with email, role, isActive, name, customerId
 
 module.exports = router;

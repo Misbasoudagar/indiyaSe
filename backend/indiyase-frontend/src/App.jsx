@@ -3,8 +3,11 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Routes, Route } from "react-router-dom";
 
-// Admin Pages
+// Layouts
+import Layout from './components/Layout';
 import AdminLayout from "./pages/admin/AdminLayout";
+
+// Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AddProduct from "./pages/admin/AddProduct";
 import EditProduct from "./pages/admin/EditProduct";
@@ -19,7 +22,8 @@ import Adminsellerlist from "./pages/admin/Adminsellerlist";
 import HomePage from './pages/HomePage';
 import Login from './pages/LoginPage';
 import Register from './pages/RegisterPage';
-import ProductList from "./pages/ProductList";
+import ProductList from "./pages/admin/ProductList";  // ✅ Corrected
+
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from './pages/NotFound';
@@ -45,7 +49,8 @@ const App = () => {
       <ToastContainer />
 
       <Routes>
-        {/* ✅ Admin Login - outside layout */}
+
+        {/* ✅ Admin Login - outside admin layout */}
         <Route path="/admin/login" element={<AdminLogin />} />
 
         {/* ✅ Admin Routes */}
@@ -60,26 +65,28 @@ const App = () => {
           <Route path="sellers" element={<Adminsellerlist />} />
         </Route>
 
-        {/* ✅ Public Routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/products" element={<ProductList />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/orders" element={<OrdersPage />} />
-        <Route path="/my-orders" element={<MyOrdersPage />} />
-        <Route path="/wallet" element={<WalletPage />} />
-        <Route path="/upload-prescription" element={<Uploadprescription />} />
-        <Route path="/become-a-seller" element={<Becomeaseller />} />
-        <Route path="/category/:categoryName" element={<CategoryProducts />} />
-        <Route path="/product-grid" element={<ProductGrid />} />
-        <Route path="/categories" element={<CategoryPage />} />
-        <Route path="/shipping" element={<ShippingPage />} />
-        <Route path="/checkout-payment" element={<CheckoutPaymentPage />} />
-        <Route path="/thankyou" element={<ThankYouPage />} />
-        <Route path="/collections/:category" element={<CollectionPage />} />
-        <Route path="*" element={<NotFound />} />
+        {/* ✅ Public Routes with shared Layout */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="products" element={<ProductGrid />} />
+          <Route path="cart" element={<CartPage />} />
+          <Route path="checkout" element={<CheckoutPage />} />
+          <Route path="orders" element={<OrdersPage />} />
+          <Route path="my-orders" element={<MyOrdersPage />} />
+          <Route path="wallet" element={<WalletPage />} />
+          <Route path="upload-prescription" element={<Uploadprescription />} />
+          <Route path="become-a-seller" element={<Becomeaseller />} />
+          <Route path="category/:categoryName" element={<CategoryProducts />} />
+          <Route path="categories" element={<CategoryPage />} />
+          <Route path="shipping" element={<ShippingPage />} />
+          <Route path="checkout-payment" element={<CheckoutPaymentPage />} />
+          <Route path="thankyou" element={<ThankYouPage />} />
+          <Route path="collections/:category" element={<CollectionPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+
       </Routes>
     </>
   );

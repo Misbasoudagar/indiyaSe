@@ -90,3 +90,21 @@ button:focus-visible {
   animation: spin 1s ease-in-out infinite;
   margin-right: 8px;
 }
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+.full-width-grid {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 2rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 1280px) {
+  .full-width-grid {
+    padding: 0 4rem;
+  }
+}
