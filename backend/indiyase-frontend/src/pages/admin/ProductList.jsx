@@ -1,30 +1,38 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./ProductList.css";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [deletingId, setDeletingId] = useState(null); // Track which product is being deleted
+  const [deletingId, setDeletingId] = useState(null);
 
   const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
 
-  // Wrap fetchProducts in useCallback to prevent unnecessary recreations
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(`${API_BASE}/api/products`);
-      
-      // Normalize response data
-      const data = Array.isArray(response.data) 
-        ? response.data 
-        : response.data.products || [];
-      
+
+      // Get token from localStorage
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo?.token}`,
+        },
+      };
+
+      const response = await axios.get(`${API_BASE}/api/products`, config);
+
+      const data = Array.isArray(response.data)
+      ? response.data
+      : response.data.data || []; // <- Correct key here
+    
+
       setProducts(data);
     } catch (err) {
       console.error("Fetch products error:", err);
@@ -37,12 +45,20 @@ const ProductList = () => {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
-    
+
     try {
-      setDeletingId(id); // Show loading state for this specific product
-      await axios.delete(`${API_BASE}/api/products/${id}`);
+      setDeletingId(id);
+
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo?.token}`,
+        },
+      };
+
+      await axios.delete(`${API_BASE}/api/products/${id}`, config);
       toast.success("Product deleted successfully");
-      await fetchProducts(); // Refresh the list
+      await fetchProducts();
     } catch (err) {
       console.error("Delete product error:", err);
       toast.error(err.response?.data?.message || "Failed to delete product");
@@ -104,14 +120,18 @@ const ProductList = () => {
                   <td>₹{product.price.toLocaleString()}</td>
                   <td>
                     {product.image && (
-                      <img 
-                        src={product.image.startsWith('http') ? product.image : `${API_BASE}${product.image}`}
+                      <img
+                        src={
+                          product.image.startsWith("http")
+                            ? product.image
+                            : `${API_BASE}${product.image}`
+                        }
                         alt={product.name}
                         className="product-img"
                         loading="lazy"
                         onError={(e) => {
                           e.target.src = "https://via.placeholder.com/100";
-                          e.target.onerror = null; // Prevent infinite loop
+                          e.target.onerror = null;
                         }}
                       />
                     )}
@@ -125,7 +145,7 @@ const ProductList = () => {
                       onClick={() => handleDelete(product._id)}
                       disabled={deletingId === product._id}
                     >
-                      {deletingId === product._id ? 'Deleting...' : 'Delete'}
+                      {deletingId === product._id ? "Deleting..." : "Delete"}
                     </button>
                   </td>
                 </tr>

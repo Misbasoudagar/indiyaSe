@@ -85,7 +85,10 @@ const App = () => {
           <Route path="thankyou" element={<ThankYouPage />} />
           <Route path="collections/:category" element={<CollectionPage />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/category/:categorySlug/:subcategorySlug" element={<CategoryPage />} />
+
         </Route>
+
 
       </Routes>
     </>

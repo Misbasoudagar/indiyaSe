@@ -1,14 +1,24 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Header from '../components/Header'; // adjust path if Header is elsewhere
+import { Outlet, useLocation } from 'react-router-dom';
+import Header from '../components/Header';
 
 const Layout = () => {
+  const location = useLocation();
+  const pathname = decodeURIComponent(location.pathname.toLowerCase());
+
+  const isHomePage = pathname === '/';
+  const isCategoryPage = pathname.startsWith('/category/');
+
+  const isFullWidth = isHomePage || isCategoryPage;
+
   return (
-    <div className="w-full bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header />
-      <main className="w-full">
-        <Outlet />
-      </main>
+      <main
+  className={`w-full px-4 ${isFullWidth ? '' : 'max-w-7xl mx-auto'}`}
+>
+  <Outlet />
+</main>
     </div>
   );
 };

@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 const Header = () => {
   return (
     <header className="bg-gradient-to-r from-[#faf5f1] to-[#f0e6d9] shadow-md py-4 sticky top-0 z-50 w-full">
-      <div className="w-full px-4 mx-auto">
+      {/* Removed max-width constraint and adjusted padding */}
+      <div className="w-full px-4">
         {/* Top Row */}
         <div className="flex flex-col md:flex-row items-stretch gap-4 w-full">
           {/* Logo - Left aligned */}
@@ -18,7 +19,7 @@ const Header = () => {
 
           {/* Search */}
           <div className="flex-1 min-w-0">
-            <div className="relative max-w-2xl mx-auto">
+            <div className="relative w-full">
               <input
                 type="text"
                 placeholder="Search for Products..."
@@ -62,32 +63,65 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Navigation */}
+        {/* Navigation - Full width with scroll */}
         <nav className="mt-4 w-full overflow-x-auto whitespace-nowrap scrollbar-hide">
-          <div className="flex gap-4 md:gap-6 text-sm font-semibold text-gray-900 py-2 w-max mx-auto">
-            {[
-              'Home',
-              'Women Ethnic',
-              'Women Western',
-              'Men Wears',
-              'Kids',
-              'Electronics',
-              'Beauty',
-              'Grocery',
-              'Home & Kitchen',
-              'Jewellery',
-              'Footwears',
-              'Books'
-            ].map((item, i) => (
-              <Link
-                to={item === 'Home' ? '/' : `/category/${encodeURIComponent(item)}`}
-                key={i}
-                className="text-gray-900 hover:text-orange-600 transition-colors px-2 py-1 rounded-lg hover:bg-orange-50"
-              >
-                {item}
-              </Link>
-            ))}
-          </div>
+        <div className="flex gap-4 md:gap-6 text-sm font-semibold text-gray-900 py-2 w-max mx-auto">
+
+{/* Home */}
+<Link
+  to="/"
+  className="text-gray-900 hover:text-orange-600 transition-colors px-2 py-1 rounded-lg hover:bg-orange-50"
+>
+  Home
+</Link>
+
+{/* Women Ethnic with dropdown */}
+<div className="relative group">
+  <button className="px-2 py-1 rounded-lg hover:bg-orange-50 hover:text-orange-600 transition-colors">
+    Women Ethnic
+  </button>
+  <div className="absolute hidden group-hover:block bg-white border mt-1 z-10 shadow-md rounded-md">
+    <ul className="text-sm text-gray-700 p-2 w-40">
+      <li>
+        <Link to="/collections/ethnic1/kurtis" className="block px-3 py-1 hover:bg-orange-100">Kurtis</Link>
+      </li>
+      <li>
+        <Link to="/collections/ethnic1/sarees" className="block px-3 py-1 hover:bg-orange-100">Sarees</Link>
+      </li>
+      <li>
+        <Link to="/collections/ethnic1/suits" className="block px-3 py-1 hover:bg-orange-100">Sets & Suits</Link>
+      </li>
+      <li>
+        <Link to="/collections/ethnic1/lehenga" className="block px-3 py-1 hover:bg-orange-100">Lehenga</Link>
+      </li>
+    </ul>
+  </div>
+</div>
+
+{/* Other static categories */}
+{[
+  'Women Western',
+  'Men Wears',
+  'Kids',
+  'Electronics',
+  'Beauty',
+  'Grocery',
+  'Home & Kitchen',
+  'Jewellery',
+  'Footwears',
+  'Books'
+].map((item, i) => (
+  <Link
+    to={`/category/${encodeURIComponent(item)}`}
+    key={i}
+    className="text-gray-900 hover:text-orange-600 transition-colors px-2 py-1 rounded-lg hover:bg-orange-50"
+  >
+    {item}
+  </Link>
+))}
+
+</div>
+
         </nav>
       </div>
     </header>
