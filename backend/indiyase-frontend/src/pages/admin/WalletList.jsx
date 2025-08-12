@@ -34,32 +34,45 @@ const WalletList = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>👛 All Wallets</h2>
-      <table border="1" cellPadding="10" style={{ width: "100%", marginTop: "20px" }}>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>User Email</th>
-            <th>Balance (₹)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {wallets.map((w, idx) => (
-            <tr key={w._id}>
-              <td>{idx + 1}</td>
-              <td>{w.email}</td>
-              <td>₹{w.balance}</td>
-              <td>
-                <button onClick={() => handleWalletUpdate(w.email)}>Update Balance</button>
-              </td>
-            </tr>
-            
-          ))}
-        </tbody>
-      </table>
+    <div className="p-6">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">👛 All Wallets</h2>
       
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border border-gray-300 dark:border-gray-600">
+          <thead className="bg-gray-100 dark:bg-gray-800">
+            <tr>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">#</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">User Email</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Balance (₹)</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Action</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+            {wallets.map((w, idx) => (
+              <tr key={w._id}>
+                <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-200">{idx + 1}</td>
+                <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-200">{w.email}</td>
+                <td className="px-4 py-2 text-sm text-green-600 dark:text-green-400 font-semibold">₹{w.balance}</td>
+                <td className="px-4 py-2">
+                  <button
+                    onClick={() => handleWalletUpdate(w.email)}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow-sm text-sm transition"
+                  >
+                    Update Balance
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {wallets.length === 0 && (
+              <tr>
+                <td colSpan="4" className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  No wallets found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

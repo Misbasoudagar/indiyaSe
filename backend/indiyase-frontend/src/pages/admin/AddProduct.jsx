@@ -48,7 +48,7 @@ const AddProduct = () => {
       setImageFile(null);
 
       setTimeout(() => {
-        navigate('/admin/products'); // Redirect to Product List page
+        navigate('/admin/products');
       }, 1000);
     } catch (err) {
       console.error(err);
@@ -60,30 +60,76 @@ const AddProduct = () => {
   };
 
   return (
-    <div style={{ maxWidth: '500px', margin: 'auto', padding: '1rem' }}>
-      <h2>Add Product</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="name" placeholder="Product Name" value={product.name} onChange={handleChange} required />
-        <textarea name="description" placeholder="Description" value={product.description} onChange={handleChange} required />
-        <input type="number" name="price" placeholder="Price" value={product.price} onChange={handleChange} required />
-        <select name="category" value={product.category} onChange={handleChange}>
-          <option value="Women Ethnic">Women Ethnic</option>
-          <option value="Women Western">Women Western</option>
-          <option value="Men Wears">Men Wears</option>
-          <option value="Kids">Kids</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Beauty">Beauty</option>
-          <option value="Grocery">Grocery</option>
-          <option value="Home & Kitchen">Home & Kitchen</option>
-          <option value="Jewellery">Jewellery</option>
-          <option value="Footwears">Footwears</option>
-          <option value="Books">Books</option>
-        </select>
-        <input type="file" accept="image/*" onChange={handleImageChange} />
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Adding...' : 'Add Product'}
-        </button>
-      </form>
+    <div className="w-full min-h-screen p-6 bg-white dark:bg-gray-900 flex items-center justify-center">
+      <div className="w-full max-w-xl bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Add New Product</h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            name="name"
+            placeholder="Product Name"
+            value={product.name}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+          />
+
+          <textarea
+            name="description"
+            placeholder="Description"
+            value={product.description}
+            onChange={handleChange}
+            required
+            rows={4}
+            className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+          />
+
+          <input
+            type="number"
+            name="price"
+            placeholder="Price"
+            value={product.price}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+          />
+
+          <select
+            name="category"
+            value={product.category}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+          >
+            <option value="Women Ethnic">Women Ethnic</option>
+            <option value="Women Western">Women Western</option>
+            <option value="Men Wears">Men Wears</option>
+            <option value="Kids">Kids</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Grocery">Grocery</option>
+            <option value="Home & Kitchen">Home & Kitchen</option>
+            <option value="Jewellery">Jewellery</option>
+            <option value="Footwears">Footwears</option>
+            <option value="Books">Books</option>
+          </select>
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full px-4 py-2 border rounded-md file:bg-blue-600 file:text-white file:rounded file:px-4 file:py-2 dark:bg-gray-700 dark:text-white"
+          />
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition disabled:opacity-60"
+          >
+            {isSubmitting ? 'Adding...' : 'Add Product'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
